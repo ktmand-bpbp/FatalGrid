@@ -1,0 +1,1353 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Psionics Systems Corp — Life Management</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --white: #FAFAFA;
+  --off: #F2F4F8;
+  --border: #E2E6EF;
+  --text: #0A0C14;
+  --sub: #5A6278;
+  --blue: #0044CC;
+  --blue-light: #EBF0FF;
+  --cyan: #00B4D8;
+  --red: #CC2200;
+  --red-light: #FFF0EE;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'Noto Sans KR', sans-serif;
+  background: var(--white);
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── NAV ── */
+nav {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(255,255,255,0.96);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 0 48px;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 60px;
+  animation: nav-drop 0.5s ease both;
+}
+
+@keyframes nav-drop {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.nav-logo {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 15px; font-weight: 600;
+  color: var(--text); letter-spacing: -0.02em; text-decoration: none;
+}
+
+.nav-logo-mark {
+  width: 28px; height: 28px; background: var(--blue);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-size: 12px; font-weight: 700;
+  position: relative; overflow: hidden;
+}
+
+/* ── 로고 글리치 ── */
+.nav-logo-mark::after {
+  content: 'Ψ';
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--cyan);
+  animation: logo-glitch 8s infinite;
+  clip-path: inset(0 0 100% 0);
+}
+
+@keyframes logo-glitch {
+  0%,92%,100% { clip-path: inset(0 0 100% 0); opacity: 0; transform: none; }
+  93%          { clip-path: inset(30% 0 40% 0); opacity: 0.9; transform: translateX(2px); }
+  94%          { clip-path: inset(10% 0 70% 0); opacity: 0.7; transform: translateX(-2px); }
+  95%          { clip-path: inset(50% 0 10% 0); opacity: 0.9; transform: translateX(1px); }
+  96%          { clip-path: inset(0 0 100% 0); opacity: 0; }
+}
+
+.nav-links { display: flex; gap: 32px; list-style: none; }
+.nav-links a { font-size: 13px; color: var(--sub); text-decoration: none; transition: color 0.15s; }
+.nav-links a:hover { color: var(--text); }
+
+.nav-cta {
+  font-size: 13px; font-weight: 500;
+  color: var(--white); background: var(--blue);
+  padding: 8px 18px; border-radius: 6px;
+  text-decoration: none; transition: opacity 0.15s, transform 0.15s;
+}
+.nav-cta:hover { opacity: 0.85; transform: translateY(-1px); }
+
+/* ── ALERT ── */
+.alert-banner {
+  background: var(--red-light);
+  border-bottom: 1px solid #FFD0CA;
+  padding: 10px 48px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 12px; color: var(--red);
+  position: relative; overflow: hidden;
+  animation: alert-in 0.4s 0.2s ease both;
+}
+
+@keyframes alert-in {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: none; }
+}
+
+/* 배너 shimmer */
+.alert-banner::after {
+  content: '';
+  position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+  animation: shimmer 4s 2s linear infinite;
+}
+
+@keyframes shimmer { to { left: 160%; } }
+
+.alert-dot {
+  width: 6px; height: 6px;
+  background: var(--red); border-radius: 50%; flex-shrink: 0;
+  animation: pulse-red 2s infinite;
+}
+
+@keyframes pulse-red {
+  0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(204,34,0,0.4); }
+  50%      { opacity: 0.5; box-shadow: 0 0 0 4px rgba(204,34,0,0); }
+}
+
+.alert-banner strong { font-weight: 600; }
+
+/* ── HERO ── */
+.hero {
+  padding: 100px 48px 80px;
+  max-width: 1100px; margin: 0 auto;
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 80px; align-items: center;
+}
+
+/* 히어로 텍스트 스태거 */
+.hero-eyebrow { animation: fade-up 0.6s 0.3s ease both; }
+.hero h1      { animation: fade-up 0.6s 0.45s ease both; }
+.hero-sub     { animation: fade-up 0.6s 0.6s ease both; }
+.hero-actions { animation: fade-up 0.6s 0.75s ease both; }
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: none; }
+}
+
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-size: 11px; font-weight: 500;
+  color: var(--blue); text-transform: uppercase;
+  letter-spacing: 0.08em; margin-bottom: 20px;
+}
+
+.hero-eyebrow::before {
+  content: ''; display: block;
+  width: 16px; height: 1px; background: var(--blue);
+}
+
+.hero h1 {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(36px, 4vw, 52px);
+  line-height: 1.1; letter-spacing: -0.02em;
+  color: var(--text); margin-bottom: 24px;
+}
+
+.hero h1 em { font-style: italic; color: var(--blue); }
+
+.hero-sub {
+  font-size: 16px; color: var(--sub);
+  line-height: 1.8; margin-bottom: 36px; max-width: 420px;
+}
+
+.hero-actions { display: flex; gap: 12px; align-items: center; }
+
+.btn-primary {
+  font-size: 14px; font-weight: 500;
+  color: var(--white); background: var(--blue);
+  padding: 12px 24px; border-radius: 8px;
+  text-decoration: none; transition: opacity 0.15s, transform 0.15s;
+}
+.btn-primary:hover { opacity: 0.85; transform: translateY(-2px); }
+
+.btn-ghost {
+  font-size: 14px; color: var(--sub);
+  text-decoration: none;
+  display: flex; align-items: center; gap: 6px;
+  transition: color 0.15s, gap 0.2s;
+}
+.btn-ghost:hover { color: var(--text); gap: 10px; }
+
+/* ── 칩 위젯 ── */
+.hero-visual {
+  background: var(--off); border: 1px solid var(--border);
+  border-radius: 16px; padding: 32px;
+  position: relative; overflow: hidden;
+  animation: fade-up 0.7s 0.9s ease both;
+}
+
+/* 스캔 라인 */
+.hero-visual::before {
+  content: '';
+  position: absolute; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0,180,216,0.6), transparent);
+  top: -2px;
+  animation: chip-scan 3.5s ease-in-out infinite;
+  z-index: 2; pointer-events: none;
+}
+
+@keyframes chip-scan {
+  0%   { top: -2px; opacity: 0; }
+  5%   { opacity: 1; }
+  95%  { opacity: 1; }
+  100% { top: calc(100% + 2px); opacity: 0; }
+}
+
+/* 배경 그라디언트 */
+.hero-visual::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(135deg, transparent 60%, rgba(0,68,204,0.04));
+  pointer-events: none;
+}
+
+.chip-status {
+  background: white; border: 1px solid var(--border);
+  border-radius: 10px; padding: 16px 20px; margin-bottom: 12px;
+  display: flex; justify-content: space-between; align-items: center;
+  transition: border-color 0.2s;
+}
+.chip-status:hover { border-color: #b0c0e8; }
+
+.chip-status-label { font-size: 12px; color: var(--sub); font-weight: 500; }
+.chip-status-val { font-size: 13px; font-weight: 600; color: var(--text); }
+.chip-status-val.green { color: #00875A; }
+.chip-status-val.blue { color: var(--blue); }
+
+.chip-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.chip-stat {
+  background: white; border: 1px solid var(--border);
+  border-radius: 10px; padding: 14px 16px;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.chip-stat:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+
+.chip-stat-n {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 24px; color: var(--blue);
+  line-height: 1; margin-bottom: 4px;
+}
+
+.chip-stat-l { font-size: 11px; color: var(--sub); }
+.chip-footer { margin-top: 12px; font-size: 11px; color: var(--sub); text-align: center; line-height: 1.5; }
+
+/* ── STATS BAR ── */
+.stats-bar {
+  background: var(--text); padding: 40px 48px;
+  display: flex; justify-content: center; gap: 0;
+}
+
+.stat-item {
+  flex: 1; max-width: 200px; text-align: center;
+  padding: 0 32px;
+  border-right: 1px solid rgba(255,255,255,0.1);
+}
+.stat-item:last-child { border-right: none; }
+
+.stat-n {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 36px; color: var(--white);
+  line-height: 1; margin-bottom: 6px;
+  transition: color 0.3s;
+}
+
+.stat-l { font-size: 12px; color: rgba(255,255,255,0.45); line-height: 1.4; }
+
+/* ── SCROLL REVEAL ── */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* 스태거 */
+.reveal-delay-1 { transition-delay: 0.1s; }
+.reveal-delay-2 { transition-delay: 0.2s; }
+.reveal-delay-3 { transition-delay: 0.3s; }
+.reveal-delay-4 { transition-delay: 0.4s; }
+
+/* ── SECTIONS ── */
+section { padding: 80px 48px; max-width: 1100px; margin: 0 auto; }
+
+.section-eyebrow {
+  font-size: 11px; font-weight: 500;
+  color: var(--blue); text-transform: uppercase;
+  letter-spacing: 0.08em; margin-bottom: 16px;
+}
+
+.section-title {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1.2; letter-spacing: -0.02em;
+  margin-bottom: 16px; max-width: 600px;
+}
+
+.section-sub {
+  font-size: 15px; color: var(--sub);
+  line-height: 1.8; max-width: 750px; margin-bottom: 48px;
+}
+
+/* ── GRID CARDS ── */
+.grid-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+.grid-card {
+  background: var(--off); border: 1px solid var(--border);
+  border-radius: 12px; padding: 28px;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s;
+  cursor: default;
+}
+.grid-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.08);
+  border-color: #c8d4f0;
+}
+
+.grid-card-icon {
+  width: 36px; height: 36px;
+  background: var(--blue-light); border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 16px; margin-bottom: 16px;
+  transition: transform 0.25s;
+}
+.grid-card:hover .grid-card-icon { transform: scale(1.1); }
+
+.grid-card h3 { font-size: 15px; font-weight: 600; margin-bottom: 8px; }
+.grid-card p { font-size: 13px; color: var(--sub); line-height: 1.6; }
+
+.grid-card-tag {
+  display: inline-block; font-size: 10px; font-weight: 500;
+  padding: 3px 8px; border-radius: 20px;
+  margin-top: 12px; letter-spacing: 0.04em;
+}
+
+.tag-green { background: #E3F9ED; color: #00692A; }
+.tag-blue  { background: var(--blue-light); color: var(--blue); }
+.tag-orange{ background: #FFF3E0; color: #B25000; }
+
+/* ── SUBSCRIPTION ── */
+.sub-section {
+  background: var(--off);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 80px 48px;
+}
+
+.sub-inner { max-width: 1100px; margin: 0 auto; }
+
+.plans { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 48px; }
+
+.plan {
+  background: white; border: 1px solid var(--border);
+  border-radius: 14px; padding: 28px; position: relative;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.plan:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.08); }
+.plan.featured { border-color: var(--blue); box-shadow: 0 0 0 1px var(--blue); }
+.plan.featured:hover { box-shadow: 0 0 0 1px var(--blue), 0 16px 40px rgba(0,68,204,0.12); }
+
+.plan-badge {
+  position: absolute; top: -11px; left: 50%; transform: translateX(-50%);
+  background: var(--blue); color: white;
+  font-size: 10px; font-weight: 600;
+  padding: 3px 12px; border-radius: 20px;
+  letter-spacing: 0.06em; white-space: nowrap;
+}
+
+.plan-name { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--sub); margin-bottom: 8px; }
+
+.plan-price {
+  font-family: 'DM Serif Display', serif;
+  font-size: 32px; color: var(--text);
+  line-height: 1; margin-bottom: 4px;
+}
+.plan-price span { font-family: 'Noto Sans KR', sans-serif; font-size: 14px; font-weight: 400; color: var(--sub); }
+
+.plan-desc {
+  font-size: 12px; color: var(--sub); line-height: 1.5;
+  margin: 12px 0 20px; padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.plan-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+
+.plan-features li {
+  font-size: 13px; color: var(--text);
+  display: flex; gap: 8px; align-items: flex-start; line-height: 1.5;
+}
+.plan-features li::before { content: '✓'; color: var(--blue); font-weight: 600; flex-shrink: 0; margin-top: 1px; }
+.plan-features li.disabled { color: var(--sub); opacity: 0.5; }
+.plan-features li.disabled::before { content: '—'; color: var(--sub); }
+
+.plan-btn {
+  display: block; text-align: center;
+  font-size: 13px; font-weight: 500;
+  padding: 10px; border-radius: 8px;
+  text-decoration: none; transition: all 0.15s;
+}
+.plan-btn-ghost { color: var(--blue); border: 1px solid var(--border); }
+.plan-btn-ghost:hover { border-color: var(--blue); background: var(--blue-light); }
+.plan-btn-solid { color: white; background: var(--blue); }
+.plan-btn-solid:hover { opacity: 0.85; }
+
+.plan-note { font-size: 11px; color: #999; margin-top: 10px; text-align: center; line-height: 1.5; }
+
+/* ── SAFETY ── */
+.safety { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center; }
+
+.safety-list { list-style: none; display: flex; flex-direction: column; gap: 0; }
+
+.safety-item {
+  padding: 20px 0; border-bottom: 1px solid var(--border);
+  display: flex; gap: 16px; align-items: flex-start;
+  transition: background 0.2s;
+}
+.safety-item:first-child { padding-top: 0; }
+
+.safety-icon {
+  width: 32px; height: 32px;
+  background: var(--blue-light); border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0; margin-top: 2px;
+  transition: transform 0.2s;
+}
+.safety-item:hover .safety-icon { transform: scale(1.1); }
+
+.safety-item h4 { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+.safety-item p { font-size: 13px; color: var(--sub); line-height: 1.6; }
+
+.safety-disclaimer {
+  background: var(--off); border: 1px solid var(--border);
+  border-radius: 12px; padding: 24px;
+  font-size: 12px; color: var(--sub); line-height: 1.7;
+  position: relative; overflow: hidden;
+}
+
+/* 면책 조항 상단 라인 애니메이션 */
+.safety-disclaimer::before {
+  content: '';
+  position: absolute; top: 0; left: -100%; width: 40%; height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(0,68,204,0.4), transparent);
+  animation: scan-blue 5s 1s linear infinite;
+}
+
+@keyframes scan-blue { to { left: 160%; } }
+
+.safety-disclaimer strong {
+  display: block; font-size: 13px; font-weight: 600;
+  color: var(--text); margin-bottom: 10px;
+}
+
+/* ── GLITCH DIVIDER ── */
+.glitch-divider {
+  height: 1px; background: var(--border);
+  position: relative; overflow: hidden;
+}
+
+.glitch-divider::after {
+  content: ''; position: absolute; top: 0;
+  left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, var(--cyan), transparent);
+  animation: scan 4s linear infinite;
+}
+
+@keyframes scan { to { left: 200%; } }
+
+/* ── STATUS DOT ── */
+.status-dot {
+  width: 6px; height: 6px; background: #00C48C;
+  border-radius: 50%; display: inline-block;
+  margin-right: 6px; animation: pulse-green 3s infinite;
+}
+
+@keyframes pulse-green {
+  0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(0,196,140,0.4); }
+  50%      { opacity: 0.5; box-shadow: 0 0 0 4px rgba(0,196,140,0); }
+}
+
+/* ── FOOTER ── */
+footer { background: var(--text); padding: 48px; color: rgba(255,255,255,0.4); font-size: 12px; }
+
+.footer-inner {
+  max-width: 1100px; margin: 0 auto;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 48px;
+}
+
+.footer-logo {
+  display: flex; align-items: center; gap: 10px;
+  color: white; font-size: 14px; font-weight: 600; margin-bottom: 12px;
+}
+
+.footer-logo-mark {
+  width: 24px; height: 24px; background: var(--blue);
+  border-radius: 5px; display: flex; align-items: center;
+  justify-content: center; font-size: 10px; font-weight: 700; color: white;
+}
+
+.footer-tagline { font-size: 12px; line-height: 1.6; max-width: 280px; }
+.footer-links { display: flex; gap: 48px; }
+
+.footer-col h5 {
+  font-size: 11px; font-weight: 600;
+  color: rgba(255,255,255,0.7);
+  text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 14px;
+}
+
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 8px; }
+
+.footer-col a {
+  color: rgba(255,255,255,0.35); text-decoration: none;
+  font-size: 12px; transition: color 0.15s;
+}
+.footer-col a:hover { color: rgba(255,255,255,0.7); }
+
+.footer-bottom {
+  max-width: 1100px; margin: 32px auto 0;
+  padding-top: 24px; border-top: 1px solid rgba(255,255,255,0.08);
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: 11px; color: rgba(255,255,255,0.2);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 860px) {
+  nav { padding: 0 20px; }
+  .nav-links { display: none; }
+  .hero { grid-template-columns: 1fr; gap: 40px; padding: 60px 20px; }
+  .hero-visual { display: none; }
+  .stats-bar { flex-wrap: wrap; gap: 24px; padding: 40px 20px; }
+  section { padding: 60px 20px; }
+  .grid-cards, .plans { grid-template-columns: 1fr; }
+  .safety { grid-template-columns: 1fr; }
+  .sub-section { padding: 60px 20px; }
+  .alert-banner { padding: 10px 20px; }
+  .footer-inner { flex-direction: column; }
+  .footer-links { flex-wrap: wrap; gap: 32px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+/* ── PRODUCTS ── */
+.products-section {
+  padding: 80px 48px;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+.product-block {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+  padding: 56px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.product-block:last-child { border-bottom: none; }
+.product-block.reverse { direction: rtl; }
+.product-block.reverse > * { direction: ltr; }
+
+.product-visual {
+  background: var(--off);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 40px 32px;
+  position: relative;
+  overflow: hidden;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: border-color 0.3s;
+}
+
+.product-visual:hover { border-color: #c0d0ee; }
+
+.product-visual::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgba(0,68,204,0.03) 0%, transparent 60%);
+  pointer-events: none;
+}
+
+.product-code {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--blue);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 16px;
+}
+
+.product-visual-name {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 22px;
+  color: var(--text);
+  line-height: 1.2;
+  margin-bottom: 20px;
+}
+
+.product-specs {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.product-specs li {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.product-specs li:last-child { border-bottom: none; }
+
+.spec-key { color: var(--sub); }
+.spec-val { color: var(--text); font-weight: 500; text-align: right; }
+.spec-val.highlight { color: var(--blue); }
+.spec-val.warn { color: var(--red); }
+
+.product-badge-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+
+.product-badge {
+  font-size: 10px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+}
+
+.badge-blue   { background: var(--blue-light); color: var(--blue); }
+.badge-dark   { background: #1a1f2e; color: rgba(255,255,255,0.7); }
+.badge-green  { background: #E3F9ED; color: #00692A; }
+.badge-orange { background: #FFF3E0; color: #B25000; }
+
+.product-info {}
+
+.product-tag {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--blue);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+}
+
+.product-name {
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: clamp(24px, 2.5vw, 34px);
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+
+.product-desc {
+  font-size: 14px;
+  color: var(--sub);
+  line-height: 1.8;
+  margin-bottom: 24px;
+}
+
+.product-features {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+
+.product-features li {
+  font-size: 13px;
+  color: var(--text);
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  line-height: 1.5;
+}
+
+.product-features li .feat-icon {
+  width: 20px;
+  height: 20px;
+  background: var(--blue-light);
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.product-fine {
+  font-size: 11px;
+  color: #aaa;
+  line-height: 1.6;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+/* 뉴럴칩 시각화 */
+.chip-visual-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.chip-cell {
+  height: 28px;
+  border-radius: 4px;
+  background: var(--border);
+  position: relative;
+  overflow: hidden;
+}
+
+.chip-cell.active { background: var(--blue-light); }
+.chip-cell.active::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(0,68,204,0.3), transparent);
+  animation: chip-cell-pulse 2s infinite;
+  animation-delay: var(--d, 0s);
+}
+
+@keyframes chip-cell-pulse {
+  0%,100% { opacity: 0; }
+  50% { opacity: 1; }
+}
+
+/* 바 시각화 */
+.bar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 16px;
+}
+
+.bar-item {
+  border-radius: 4px;
+  padding: 8px 4px;
+  text-align: center;
+  font-size: 9px;
+  font-weight: 600;
+  color: var(--sub);
+  background: var(--border);
+  letter-spacing: 0.02em;
+  transition: all 0.2s;
+  cursor: default;
+}
+
+.bar-item.popular {
+  background: var(--blue);
+  color: white;
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(0,68,204,0.25);
+}
+
+.bar-item:hover:not(.popular) {
+  background: var(--blue-light);
+  color: var(--blue);
+}
+
+/* 사이버네틱스 등급 */
+.grade-bar {
+  margin-bottom: 8px;
+}
+
+.grade-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--sub);
+  margin-bottom: 4px;
+}
+
+.grade-track {
+  height: 6px;
+  background: var(--border);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.grade-fill {
+  height: 100%;
+  border-radius: 3px;
+  background: var(--blue);
+  width: 0%;
+  animation: grade-in 1.2s ease both;
+}
+
+@keyframes grade-in {
+  from { width: 0%; }
+}
+
+@media (max-width: 860px) {
+  .products-section { padding: 60px 20px; }
+  .product-block { grid-template-columns: 1fr; gap: 32px; }
+  .product-block.reverse { direction: ltr; }
+}
+</style>
+</head>
+<body>
+
+<!-- 공지 배너 -->
+<div class="alert-banner">
+  <div class="alert-dot"></div>
+  <div><strong>서비스 공지:</strong> 방화벽 패치 v9.1.3이 배포되었습니다. <a href="psionics_breach.html" style="color:var(--red);text-decoration:underline;">자세히 알아보기 →</a></div>
+</div>
+
+<!-- 내비게이션 -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-logo-mark">Ψ</div>
+    Psionics Systems Corp.
+  </a>
+  <ul class="nav-links">
+    <li><a href="#grid">그리드</a></li>
+    <li><a href="#products">제품</a></li>
+    <li><a href="#plans">구독 플랜</a></li>
+    <li><a href="#safety">안전</a></li>
+    <li><a href="#about">소개</a></li>
+  </ul>
+  <a href="psionics_breach.html" class="nav-cta">구독 관리</a>
+</nav>
+
+<!-- 히어로 -->
+<div style="max-width:1100px;margin:0 auto;">
+<div class="hero">
+  <div class="hero-content">
+    <h1>Life, <em>management</em></h1>
+    <p class="hero-sub">발 아래의 전력부터 당신의 감각까지.<br>우리는 그리드이고, 그리드는 우리입니다.</p>
+    <div class="hero-actions">
+      <a href="#plans" class="btn-primary">구독 플랜 보기</a>
+      <a href="#grid" class="btn-ghost">그리드 소개 <span>→</span></a>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div style="font-size:10px;font-weight:600;color:var(--sub);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:16px;">내 칩 상태 — 실시간</div>
+    <div class="chip-status">
+      <span class="chip-status-label">뉴럴 칩</span>
+      <span class="chip-status-val green"><span class="status-dot"></span>활성화</span>
+    </div>
+    <div class="chip-status">
+      <span class="chip-status-label">구독 상태</span>
+      <span class="chip-status-val green"><span class="status-dot"></span>정상</span>
+    </div>
+    <div class="chip-status">
+      <span class="chip-status-label">방화벽 패치</span>
+      <span class="chip-status-val blue"><span class="status-dot" style="background:var(--blue)"></span>v9.1.3 자동 업데이트됨</span>
+    </div>
+    <div class="chip-grid">
+      <div class="chip-stat">
+        <div class="chip-stat-n" data-target="98.3" data-suffix="%">0%</div>
+        <div class="chip-stat-l">고통 임계값 관리 중</div>
+      </div>
+      <div class="chip-stat">
+        <div class="chip-stat-n">17일</div>
+        <div class="chip-stat-l">다음 결제까지</div>
+      </div>
+    </div>
+    <div class="chip-footer">모든 데이터는 암호화되어 Psionics Systems Corp.에 의해 안전하게 관리됩니다.<br>
+      당신의 안전이 우리의 사명입니다.
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- 통계 -->
+<div class="stats-bar" id="stats-bar">
+  <div class="stat-item">
+    <div class="stat-n" data-target="99.7" data-suffix="%">0%</div>
+    <div class="stat-l">그리드 커버리지 유지</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-n">82 Billion</div>
+    <div class="stat-l">활성 뉴럴 칩 구독자</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-n">24/7</div>
+    <div class="stat-l">위협 대응 시스템</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-n">0</div>
+    <div class="stat-l">그리드-A 확인된 사고*</div>
+  </div>
+  <div class="stat-item">
+    <div class="stat-n">87년</div>
+    <div class="stat-l">무중단 전력 공급</div>
+  </div>
+</div>
+
+<div style="text-align:center;font-size:11px;color:#aaa;padding:10px 48px;">*코어 지구 사고 보고서는 인프라 보호법 제 7조에 의해 기밀로 분류됩니다. 데이터는 공개 열람 가능 기록만을 반영합니다.</div>
+
+<!-- 그리드 섹션 -->
+<div class="glitch-divider"></div>
+<section id="grid">
+  <div class="section-eyebrow reveal">그리드 시스템</div>
+  <h2 class="section-title reveal reveal-delay-1">기반 시설</h2>
+  <p class="section-sub reveal reveal-delay-2">
+    기존 육지의 80% 이상이 침수된 세계,<br>
+    Psionics Systems Corp.는 현대 문명을 유지하는 계층형 거주·자원 네트워크인 그리드를 설계하고 건설했습니다.<br>
+    각 구역은 해당 인구의 필요에 맞게 최적화되어 있습니다.</p>
+  <div class="grid-cards">
+    <div class="grid-card reveal reveal-delay-1">
+      <h3>그리드-A — 코어 지구</h3>
+      <p>Psionics 본사 및 프리미엄 거주 구역.<br>완전한 환경 제어. <br>미해결 사고 0%.</p>
+      <span class="grid-card-tag tag-blue">제한적 접근</span>
+    </div>
+    <div class="grid-card reveal reveal-delay-2">
+      <h3>그리드-B — 일반 지구</h3>
+      <p>혼합 주거·상업 구역. <br>표준 감각 필터링. <br>자치 방위원 운영 중. <br>일부 구역 현재 정비 검토에 따른 봉쇄 유지.</p>
+      <span class="grid-card-tag tag-green">일반 접근</span>
+    </div>
+    <div class="grid-card reveal reveal-delay-3">
+      <h3>그리드-C/D — 산업 지구</h3>
+      <p>발전·수처리·중공업 구역. <br>계약 노동 인력으로 운영. <br>높은 위험 노출 환경. <br>Psionics는 표준 보장 범위를 초과하는 책임을 지지 않습니다.</p>
+      <span class="grid-card-tag tag-orange">위험 구역</span>
+    </div>
+  </div>
+</section>
+
+<!-- 제품 -->
+<div class="glitch-divider"></div>
+<div class="products-section" id="products">
+
+  <div class="section-eyebrow reveal">제품 라인업</div>
+  <h2 class="section-title reveal reveal-delay-1">Psionics가 공급하는 모든 것.</h2>
+  <p class="section-sub reveal reveal-delay-2">감각부터 오늘의 식사까지.<br>그리드 위에서 살아가는 데 필요한 모든 것은 Psionics가 만듭니다.</p>
+
+  <!-- 뉴럴 칩 -->
+  <div class="product-block reveal">
+    <div class="product-visual">
+      <div>
+        <div class="product-code">PSC-NC9 // NeuralCore™ Gen-9</div>
+        <div class="product-visual-name">NeuralCore™<br>9세대 뇌 임플란트</div>
+      </div>
+      <div>
+        <div class="chip-visual-grid">
+          <div class="chip-cell active" style="--d:0s"></div>
+          <div class="chip-cell active" style="--d:0.3s"></div>
+          <div class="chip-cell active" style="--d:0.6s"></div>
+          <div class="chip-cell active" style="--d:0.1s"></div>
+          <div class="chip-cell active" style="--d:0.8s"></div>
+          <div class="chip-cell"></div>
+          <div class="chip-cell active" style="--d:0.4s"></div>
+          <div class="chip-cell active" style="--d:0.2s"></div>
+          <div class="chip-cell"></div>
+          <div class="chip-cell active" style="--d:0.9s"></div>
+          <div class="chip-cell active" style="--d:0.5s"></div>
+          <div class="chip-cell active" style="--d:0.7s"></div>
+        </div>
+        <ul class="product-specs">
+          <li><span class="spec-key">이식 시기</span><span class="spec-val highlight">출생 시 의무 이식</span></li>
+          <li><span class="spec-key">통신 대역폭</span><span class="spec-val">24Tbps (두개골 내부 전달)</span></li>
+          <li><span class="spec-key">감각 주입 포트</span><span class="spec-val highlight">지원</span></li>
+        </ul>
+        <div class="product-badge-row">
+          <span class="product-badge badge-blue">의무 이식</span>
+          <span class="product-badge badge-dark">Gen-9 최신</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-info">
+      <div class="product-tag">뉴럴 칩</div>
+      <h3 class="product-name">뇌와 그리드를<br>연결하는 핵심.</h3>
+      <p class="product-desc">Psionics NeuralCore™는 그리드 생활의 모든 것을 가능하게 합니다.<br>
+        감각 구독, HUD 통신, 신체 개조 연동, 생체 모니터링까지.<br>
+        - 단 하나의 칩으로.</p>
+      <ul class="product-features">
+        <li><span class="feat-icon">👁</span>HUD 디스플레이 — 의안 연동 시 시야에 정보 오버레이 제공.</li>
+        <li><span class="feat-icon">⚡</span>실시간 생체 모니터링 — 심박, 체온, 이상 징후 자동 감지.</li>
+        <li><span class="feat-icon">🔒</span>방화벽 패치 수신 — 글리치 바이러스 노출 차단 (구독 옵션)</li>
+      </ul>
+      <div class="product-fine">
+        의무 업그레이드 일정 미준수 시 서비스 이용이 제한될 수 있습니다. <br>Psionics는 미업그레이드 칩에서 발생하는 오작동에 대한 책임을 지지 않습니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- 사이버네틱스 -->
+  <div class="product-block reverse reveal">
+    <div class="product-visual">
+      <div>
+        <div class="product-code">PSC-BF // BioFrame™ Series</div>
+        <div class="product-visual-name">BioFrame™<br>사이버네틱스</div>
+      </div>
+      <div>
+        <div style="margin-bottom: 16px;">
+          <div class="grade-bar">
+            <div class="grade-label"><span>민간 표준</span><span>40%</span></div>
+            <div class="grade-track"><div class="grade-fill" style="width:40%; animation-delay:0.2s;"></div></div>
+          </div>
+          <div class="grade-bar">
+            <div class="grade-label"><span>산업용</span><span>65%</span></div>
+            <div class="grade-track"><div class="grade-fill" style="width:65%; animation-delay:0.4s; background:#0066FF;"></div></div>
+          </div>
+          <div class="grade-bar">
+            <div class="grade-label"><span>군용 규격</span><span>100%</span></div>
+            <div class="grade-track"><div class="grade-fill" style="width:100%; animation-delay:0.6s; background:var(--text);"></div></div>
+          </div>
+        </div>
+        <ul class="product-specs">
+          <li><span class="spec-key">제품군</span><span class="spec-val">의수·의족·의안·인공 장기</span></li>
+          <li><span class="spec-key">NeuralCore 연동</span><span class="spec-val highlight">필수</span></li>
+          <li><span class="spec-key">군용 규격 구매</span><span class="spec-val warn">Psionics 승인 필요</span></li>
+          <li><span class="spec-key">민간 공급처</span><span class="spec-val">공인 정비 센터</span></li>
+        </ul>
+        <div class="product-badge-row">
+          <span class="product-badge badge-blue">3개 등급</span>
+          <span class="product-badge badge-orange">군용 제한</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-info">
+      <div class="product-tag">사이버네틱스</div>
+      <h3 class="product-name">신체의 한계를<br>재정의합니다.</h3>
+      <p class="product-desc">
+        Psionics BioFrame™은 의수·의족·의안·인공 장기를 포괄하는<br>
+        종합 사이버네틱스 라인입니다.<br>
+        NeuralCore™와 완벽히 연동되어 신체와 그리드 사이의 경계를 좁힙니다.</p>
+      <ul class="product-features">
+        <li><span class="feat-icon">💪</span>민간 표준: 일상 생활용. 공인 정비 센터에서 구매 및 관리.</li>
+        <li><span class="feat-icon">⚙</span>산업용: 발전소·중공업 종사자 대상. 내구성 및 출력 강화.</li>
+        <li><span class="feat-icon">🔒</span>군용 규격: 펄스 대응 부대 전용. 민간 구매 시 Psionics 사전 승인 필수.</li>
+      </ul>
+      <div class="product-fine">
+        비공인 경로를 통해 구매한 부품은 Psionics 보증을 제공하지 않습니다.<br>
+        군용 규격 파츠의 무허가 소지는 인프라 보호법 제 15조 위반입니다.<br>
+        Psionics는 암시장 파츠 사용에 따른 부작용(환상통, 오작동, 스파크)에 책임을 지지 않습니다.
+      </div>
+    </div>
+  </div>
+
+  <!-- 합성 단백질 바 -->
+  <div class="product-block reveal">
+    <div class="product-visual">
+      <div>
+        <div class="product-code">PSC-NS // NutriSync™ Series</div>
+        <div class="product-visual-name">NutriSync™<br>합성 단백질 바</div>
+      </div>
+      <div>
+        <ul class="product-specs">
+          <li><span class="spec-key">총 시리즈</span><span class="spec-val">12종</span></li>
+          <li><span class="spec-key">인기 제품</span><span class="spec-val highlight">#7 (그리드-B 기준)</span></li>
+          <li><span class="spec-key">칩 영양 추적</span><span class="spec-val highlight">NeuralCore 자동 연동</span></li>
+          <li><span class="spec-key">실제 식재료 함량</span><span class="spec-val warn">0% (표준) — 프리미엄 구독 시 별도</span></li>
+        </ul>
+        <div class="product-badge-row">
+          <span class="product-badge badge-green">기본 배급</span>
+          <span class="product-badge badge-blue">12종</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-info">
+      <div class="product-tag">합성 식량</div>
+      <h3 class="product-name">오늘의 생존을<br>보장합니다.</h3>
+      <p class="product-desc">
+        Psionics NutriSync™는 그리드 전 구역에 공급되는 표준 합성 식량입니다.<br>
+        Psionics 영양 기준에 따라 설계된 영양 배합으로,<br>
+        당신의 생존에 필요한 모든 것을 제공합니다.</p>
+      <ul class="product-features">
+        <li><span class="feat-icon">🧬</span>합성 단백질: 실제 식재료 없이, 동등한 영양소를 제공합니다.</li>
+        <li><span class="feat-icon">⭐</span>그리드-B 거주자들이 가장 많이 선택하는 시리즈는 7번입니다.</li>
+        <li><span class="feat-icon">🍎</span>이외 합성 식재료를 이용한 요리들.</li>
+      </ul>
+      <div class="product-fine">
+        NutriSync™의 맛 및 식감은 실제 식재료와 다를 수 있습니다.<br>Psionics는 NutriSync™ 외 비공인 식품의 안전성을 보증하지 않습니다.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 구독 플랜 -->
+<div class="sub-section" id="plans">
+  <div class="sub-inner">
+    <div class="section-eyebrow reveal">구독 플랜</div>
+    <h2 class="section-title reveal reveal-delay-1">플랜을 선택하세요.</h2>
+    <p class="section-sub reveal reveal-delay-2">
+      모든 플랜에는 뉴럴 칩 의무 연동이 포함됩니다.<br>
+      다운그레이드 또는 해지 시 감각 필터 비활성화 및 환경 노출 증가가 발생할 수 있습니다.
+      <br>Psionics는 구독을 항상 활성 상태로 유지하실 것을 강력히 권장합니다.</p>
+
+    <div class="plans">
+      <div class="plan reveal reveal-delay-1">
+        <div class="plan-name">베이직</div>
+        <div class="plan-price">480 <span>크레딧 / 월</span></div>
+        <div class="plan-desc">필수 생존 패키지.<br>기본 그리드 접근 및 최소 감각 필터링을 제공합니다.</div>
+        <ul class="plan-features">
+          <li>고통 임계값 관리 (40%)</li>
+          <li>감각 콘텐츠 이용</li>
+          <li class="disabled">방화벽 패치 미포함</li>
+          <li class="disabled">긴급 대응 우선 처리</li>
+          <li class="disabled">환경 악취 필터링</li>
+        </ul>
+        <a href="#" class="plan-btn plan-btn-ghost">베이직 선택</a>
+        <div class="plan-note">미결제 시 필터가 즉시 중단됩니다.</div>
+      </div>
+
+      <div class="plan featured reveal reveal-delay-2">
+        <div class="plan-badge">가장 많이 구독</div>
+        <div class="plan-name">스탠다드</div>
+        <div class="plan-price">1,200 <span>크레딧 / 월</span></div>
+        <div class="plan-desc">그리드-B 거주자를 위한 표준 플랜.<br>완전한 감각 관리 및 콘텐츠 이용 제공.</div>
+        <ul class="plan-features">
+          <li>방화벽 패치 접근 가능</li>
+          <li>고통 임계값 관리 (80%)</li>
+          <li>전체 감각 콘텐츠 라이브러리</li>
+          <li>환경 악취 필터링</li>
+          <li class="disabled">긴급 대응 우선 처리</li>
+        </ul>
+        <a href="#" class="plan-btn plan-btn-solid">스탠다드 선택</a>
+        <div class="plan-note">그리드-B 거주자에게 권장합니다.</div>
+      </div>
+
+      <div class="plan reveal reveal-delay-3">
+        <div class="plan-name">프리미엄</div>
+        <div class="plan-price">4,800 <span>크레딧 / 월</span></div>
+        <div class="plan-desc">더 나은 감각을 기대하는 분들을 위해.</div>
+        <ul class="plan-features">
+          <li>방화벽 패치 우선 제공</li>
+          <li>고통 임계값 완전 제거</li>
+          <li>무제한 감각 콘텐츠</li>
+        </ul>
+        <a href="#" class="plan-btn plan-btn-ghost">프리미엄 선택</a>
+        <div class="plan-note">그리드-A 입주 신청 포함.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 안전 -->
+<section id="safety">
+  <div class="section-eyebrow reveal">안전 & 규정 준수</div>
+  <div class="safety">
+    <ul class="safety-list">
+      <li class="safety-item reveal reveal-delay-1">
+        <div class="safety-icon">⚡</div>
+        <div>
+          <h4>펄스 대응 부대</h4>
+          <p>신체 강화로 무장한 Psionics의 전담 PMC는 모든 그리드 구역의 질서를 유지합니다.<br>
+            모든 작전은 규제 위임 범위 내에서 수행됩니다.</p>
+        </div>
+      </li>
+      <li class="safety-item reveal reveal-delay-2">
+        <div class="safety-icon">🛡</div>
+        <div>
+          <h4>나노 글리치 억제</h4>
+          <p>패치된 모든 구독자를 대상으로 글리치 바이러스 노출을 실시간 모니터링합니다.<br>
+            감염자는 Psionics 케어 프로토콜에 따라 즉시 식별·격리·관리됩니다.<br>
+            현재까지 그리드-A에서 확인된 사고 없음.</p>
+        </div>
+      </li>
+      <li class="safety-item reveal reveal-delay-3">
+        <div class="safety-icon">🔒</div>
+        <div>
+          <h4>방화벽 패치 프로그램</h4>
+          <p>독자적인 항바이러스 칩 패치를 정기적으로 업데이트하여 신규 나노 글리치 변종에 대응합니다.<br>
+            지속 보호를 위해 구독이 필요합니다.</p>
+        </div>
+      </li>
+      <li class="safety-item reveal reveal-delay-4">
+        <div class="safety-icon">📡</div>
+        <div>
+          <h4>사고 투명성</h4>
+          <p>Psionics는 모든 그리드 구역에 분기별 안전 요약을 발행합니다.<br>
+            코어 지구 운영 사항의 공개는 공공 안전을 위해 인프라 보호법 제 7조의 적용을 받습니다.</p>
+        </div>
+      </li>
+    </ul>
+
+    <div class="reveal reveal-delay-2">
+      <div class="safety-disclaimer">
+        <strong>안전 부서의 입장문</strong>
+        최근 미인가 방송을 통해 당사 방화벽 패치 프로그램에 관한 허위 정보가 유포되고 있습니다.<br>
+        <b style="color:#CC2200">Psionics Systems Corp.는 당사 패치 시스템이 나노 글리치 노출에 기여한다는 어떠한 주장도 단호히 부인합니다.</b><br>
+        해당 주장은 그리드-C/D에서 활동하는 것으로 알려진 에코테러리스트 집단과 연관된 것으로 추적되며, 현재 펄스 대응 부대가 수사 중입니다.
+        <br><br>
+        모든 구독자께 당부드립니다.<br>
+        <b>구독을 최신 상태로 유지하세요.</b>
+        검증되지 않은 정보 채널은 공공 질서에 중대한 위협이 됩니다.
+        <br><br>
+        <span style="color:#aaa;">Psionics Systems Corp. 보안 공고 #224-B. 공식 문의는 그리드 준수 담당자에게 연락하십시오.</span>
+      </div>
+
+      <div style="margin-top:16px;background:var(--blue-light);border:1px solid #C0D0FF;border-radius:12px;padding:20px 24px;">
+        <div style="font-size:13px;font-weight:600;color:var(--blue);margin-bottom:8px;">의심 활동 신고</div>
+        <div style="font-size:12px;color:var(--sub);line-height:1.6;">미인가 방송을 유포하는 개인, 칩 변조 징후를 보이는 개인, 비공인 개조 서비스를 홍보하는 개인을 발견하시면 즉시 HUD 경보 채널로 신고해 주십시오. 신고는 시민의 의무입니다.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="glitch-divider"></div>
+
+<!-- 푸터 -->
+<footer>
+  <div class="footer-inner">
+    <div>
+      <div class="footer-logo">
+        <div class="footer-logo-mark">Ψ</div>
+        Psionics Systems Corp.
+      </div>
+      <div class="footer-tagline">당신의 생존이 우리의 책임입니다.</div>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h5>제품</h5>
+        <ul>
+          <li><a href="#">뉴럴 칩 연동</a></li>
+          <li><a href="#">감각 구독</a></li>
+          <li><a href="#">방화벽 패치</a></li>
+          <li><a href="#">사이버네틱스 부문</a></li>
+          <li><a href="#">합성 영양</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>그리드 서비스</h5>
+        <ul>
+          <li><a href="#">그리드-A 입주</a></li>
+          <li><a href="#">구역 관리</a></li>
+          <li><a href="#">펄스 대응</a></li>
+          <li><a href="#">사고 신고</a></li>
+          <li><a href="#">준수 센터</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h5>회사</h5>
+        <ul>
+          <li><a href="#">Psionics 소개</a></li>
+          <li><a href="#">안전 부서</a></li>
+          <li><a href="#">채용</a></li>
+          <li><a href="#">보도자료</a></li>
+          <li><a href="#">법무 & 규정 준수</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <div>© 그리드 87년, Psionics Systems Corp. 모든 권리 보유. 인프라 보호법 적용.</div>
+    <div><span class="status-dot"></span>전 시스템 정상 운영 중</div>
+  </div>
+</footer>
+
+<script>
+  /* ── 스크롤 리빌 ── */
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        observer.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.12 });
+
+  document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+  /* ── 숫자 카운터 ── */
+  function animateCounter(el) {
+    const target = parseFloat(el.dataset.target);
+    const suffix = el.dataset.suffix || '';
+    const isDecimal = target % 1 !== 0;
+    const duration = 1600;
+    const start = performance.now();
+
+    function step(now) {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const value = target * eased;
+
+      if (target >= 10000) {
+        el.textContent = Math.floor(value).toLocaleString('ko-KR') + suffix;
+      } else if (isDecimal) {
+        el.textContent = value.toFixed(1) + suffix;
+      } else {
+        el.textContent = Math.floor(value) + suffix;
+      }
+
+      if (progress < 1) requestAnimationFrame(step);
+    }
+
+    requestAnimationFrame(step);
+  }
+
+  /* 뷰포트 진입 시 카운터 실행 */
+  const counterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting && e.target.dataset.target) {
+        animateCounter(e.target);
+        counterObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.5 });
+
+  document.querySelectorAll('[data-target]').forEach(el => counterObserver.observe(el));
+
+  /* ── 통계 바 진입 애니메이션 ── */
+  const statsBar = document.getElementById('stats-bar');
+  const statsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.stat-item').forEach((item, i) => {
+          item.style.opacity = '0';
+          item.style.transform = 'translateY(12px)';
+          setTimeout(() => {
+            item.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            item.style.opacity = '1';
+            item.style.transform = 'none';
+          }, i * 80);
+        });
+        statsObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.3 });
+
+  statsObserver.observe(statsBar);
+</script>
+</body>
+</html>
