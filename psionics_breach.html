@@ -5,1329 +5,575 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Psionics Systems — 구독 관리</title>
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --green: #e0e0e0;
-  --cyan: #b0b8c0;
-  --red: #cc2200;
-  --dim: #555566;
-  --text: #c0c8d0;
-  --blue: #0044CC;
-}
-
-body {
-  font-family: 'Courier New', monospace;
-  background: white;
-  color: #0A0C14;
-  min-height: 100vh;
-  overflow: hidden;
-  position: relative;
-}
-
-/* ══════════════════════════════════
-   PHASE 1 — 로딩 화면
-══════════════════════════════════ */
-#loading {
-  position: fixed; inset: 0;
-  background: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  transition: opacity 0.3s;
-}
-
-.load-logo {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 48px;
-  animation: load-fadein 0.6s ease both;
-}
-
-.load-logo-mark {
-  width: 36px; height: 36px;
-  background: var(--blue);
-  border-radius: 8px;
-  display: flex; align-items: center; justify-content: center;
-  color: white; font-size: 16px; font-weight: 700;
-  font-family: sans-serif;
-}
-
-.load-logo-text {
-  font-family: 'Courier New', monospace;
-  font-size: 15px; font-weight: 600;
-  color: #0A0C14; letter-spacing: -0.01em;
-}
-
-@keyframes load-fadein {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: none; }
-}
-
-.load-status {
-  font-family: 'Courier New', monospace;
-  font-size: 12px;
-  color: #888;
-  margin-bottom: 20px;
-  min-height: 16px;
-  animation: load-fadein 0.5s 0.3s ease both;
-}
-
-.load-bar-track {
-  width: 280px; height: 3px;
-  background: #eee;
-  border-radius: 2px;
-  overflow: hidden;
-  animation: load-fadein 0.5s 0.4s ease both;
-}
-
-.load-bar-fill {
-  height: 100%;
-  background: var(--blue);
-  border-radius: 2px;
-  width: 0%;
-  transition: width 0.4s ease;
-}
-
-.load-dots {
-  display: inline-block;
-}
-
-/* ══════════════════════════════════
-   PHASE 2 — 경고창
-══════════════════════════════════ */
-#alert-layer {
-  position: fixed; inset: 0;
-  z-index: 200;
-  pointer-events: none;
-  display: none;
-}
-
-.sys-alert {
-  position: absolute;
-  width: 400px;
-  background: #0a0a0a;
-  border: 2px solid #fff;
-  border-radius: 0;
-  box-shadow: 0 0 0 1px #000, 6px 6px 0 #aa1a00;
-  overflow: hidden;
-  opacity: 0;
-  transform: scale(0.9) translateY(12px);
-  transition: opacity 0.15s ease, transform 0.15s ease;
-  pointer-events: all;
-  font-family: 'Courier New', monospace;
-}
-
-.sys-alert.visible {
-  opacity: 1;
-  transform: scale(1) translateY(0);
-}
-
-.sys-alert.shake {
-  animation: alert-shake 0.35s ease;
-}
-
-@keyframes alert-shake {
-  0%,100% { transform: scale(1) translateX(0); }
-  20%      { transform: scale(1) translateX(-8px); }
-  40%      { transform: scale(1) translateX(8px); }
-  60%      { transform: scale(1) translateX(-5px); }
-  80%      { transform: scale(1) translateX(5px); }
-}
-
-/* 경고판 헤더 */
-.alert-titlebar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 14px 8px;
-  background: #bb1a00;
-  border-bottom: 2px solid #fff;
-  position: relative;
-}
-
-.alert-titlebar.dark {
-  background: #111;
-  border-bottom: 2px solid #bb1a00;
-}
-
-.alert-titlebar-main {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.alert-icon {
-  font-size: 18px;
-  line-height: 1;
-}
-
-.alert-titlebar-texts {}
-
-.alert-titlebar-title {
-  font-size: 14px;
-  font-weight: 900;
-  color: #fff;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  line-height: 1;
-}
-
-.alert-titlebar-sub {
-  font-size: 9px;
-  color: rgba(255,255,255,0.65);
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  margin-top: 2px;
-}
-
-.alert-titlebar-x {
-  font-size: 16px;
-  cursor: pointer;
-  color: rgba(255,255,255,0.5);
-  font-weight: 300;
-  line-height: 1;
-  flex-shrink: 0;
-}
-
-/* 경고판 본문 */
-.alert-body {
-  padding: 16px 18px 14px;
-  border-top: 1px solid #1f1f1f;
-}
-
-.alert-body h4 {
-  font-size: 12px;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  margin-bottom: 8px;
-}
-
-.alert-body p {
-  font-size: 11px;
-  color: #aaa;
-  line-height: 1.7;
-  margin-bottom: 12px;
-}
-
-.alert-code {
-  font-size: 10px;
-  color: #bb1a00;
-  background: #111;
-  border: 1px solid #2a2a2a;
-  padding: 6px 10px;
-  margin-bottom: 14px;
-  line-height: 1.6;
-  word-break: break-all;
-}
-
-.alert-btns {
-  display: flex;
-  gap: 8px;
-  justify-content: flex-end;
-  border-top: 1px solid #1f1f1f;
-  padding-top: 12px;
-}
-
-.alert-btn {
-  font-family: 'Courier New', monospace;
-  font-size: 11px;
-  font-weight: 700;
-  padding: 6px 16px;
-  cursor: pointer;
-  border: 1px solid #444;
-  background: #111;
-  color: #888;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  transition: all 0.1s;
-}
-
-.alert-btn:hover { background: #1a1a1a; color: #ccc; border-color: #666; }
-
-.alert-btn.primary {
-  background: #bb1a00;
-  color: #fff;
-  border-color: #bb1a00;
-}
-
-.alert-btn.primary:hover { background: #991400; }
-
-.alert-btn.danger {
-  background: #111;
-  color: #bb1a00;
-  border-color: #bb1a00;
-}
-
-/* 경고 삼각형 */
-.warn-triangle {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px; height: 32px;
-  border: 2px solid #fff;
-  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-  background: #bb1a00;
-  font-size: 0;
-  flex-shrink: 0;
-}
-
-/* 화면 플래시 오버레이 */
-#flash {
-  position: fixed; inset: 0;
-  background: white;
-  z-index: 150;
-  opacity: 0;
-  pointer-events: none;
-}
-
-/* ══════════════════════════════════
-   PHASE 3 — 블랙 터미널
-══════════════════════════════════ */
-#terminal {
-  position: fixed; inset: 0;
-  background: #000;
-  z-index: 300;
-  opacity: 0;
-  display: none;
-  overflow-y: auto;
-  padding: 40px 48px;
-}
-
-/* 스캔라인 */
-#terminal::before {
-  content: '';
-  position: fixed; inset: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(255,255,255,0.012) 2px,
-    rgba(255,255,255,0.012) 4px
-  );
-  pointer-events: none;
-  z-index: 1;
-}
-
-/* 비네팅 */
-#terminal::after {
-  content: '';
-  position: fixed; inset: 0;
-  background: radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.7) 100%);
-  pointer-events: none;
-  z-index: 1;
-}
-
-.term-content {
-  position: relative; z-index: 2;
-  max-width: 860px; margin: 0 auto;
-}
-
-/* 터미널 헤더 */
-.term-header {
-  border: 1px solid #ff333344;
-  padding: 16px 20px;
-  margin-bottom: 32px;
-  position: relative;
-  overflow: hidden;
-}
-
-.term-header::before {
-  content: '';
-  position: absolute; top: 0; left: -100%; width: 60%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,51,51,0.08), transparent);
-  animation: header-scan 3s linear infinite;
-}
-
-@keyframes header-scan { to { left: 160%; } }
-
-.term-header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
-
-.term-classification {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--red);
-  letter-spacing: 0.15em;
-  animation: blink 1.5s infinite;
-}
-
-@keyframes blink {
-  0%,100% { opacity: 1; }
-  50% { opacity: 0.3; }
-}
-
-.term-ts {
-  font-size: 10px;
-  color: var(--dim);
-}
-
-.term-title {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--red);
-  letter-spacing: 0.06em;
-  margin-bottom: 6px;
-  text-shadow: 0 0 20px rgba(255,51,51,0.4);
-}
-
-.term-subtitle {
-  font-size: 11px;
-  color: var(--dim);
-  letter-spacing: 0.08em;
-}
-
-/* 섹션 */
-.term-section {
-  margin-bottom: 36px;
-  opacity: 0;
-}
-
-.term-section.visible {
-  opacity: 1;
-}
-
-.term-section-label {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--white);
-  letter-spacing: 0.12em;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.term-section-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: #222;
-}
-
-.term-line {
-  font-size: 13px;
-  color: var(--text);
-  line-height: 1.9;
-  margin-bottom: 2px;
-  min-height: 20px;
-}
-
-.term-line .key {
-  color: var(--dim);
-  display: inline-block;
-  min-width: 200px;
-}
-
-.term-line .val-green { color: var(--green); }
-.term-line .val-cyan  { color: var(--cyan); }
-.term-line .val-red   { color: var(--red); }
-.term-line .val-dim   { color: var(--dim); }
-
-/* REDACTED 블록 */
-.redacted {
-  display: inline-block;
-  background: #333;
-  color: #333;
-  border-radius: 2px;
-  padding: 0 4px;
-  cursor: pointer;
-  position: relative;
-  transition: background 0.3s, color 0.3s;
-  user-select: none;
-}
-
-.redacted:hover {
-  background: #1a1a1a;
-  color: var(--red);
-}
-
-.redacted::after {
-  content: '[REDACTED]';
-  position: absolute;
-  inset: 0;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 9px;
-  font-weight: 700;
-  color: var(--red);
-  letter-spacing: 0.08em;
-  opacity: 0;
-  transition: opacity 0.1s;
-}
-
-.redacted:hover::after { opacity: 1; }
-
-/* 경고 박스 */
-.term-warning {
-  border: 1px solid #ff333344;
-  background: rgba(255,51,51,0.05);
-  padding: 14px 18px;
-  margin: 16px 0;
-  position: relative;
-}
-
-.term-warning-label {
-  font-size: 10px;
-  font-weight: 700;
-  color: var(--red);
-  letter-spacing: 0.1em;
-  margin-bottom: 8px;
-}
-
-.term-warning p {
-  font-size: 12px;
-  color: #cc8888;
-  line-height: 1.7;
-}
-
-/* 진행 바 */
-.term-progress { margin: 8px 0 16px; }
-.term-progress-label {
-  display: flex; justify-content: space-between;
-  font-size: 11px; color: var(--dim); margin-bottom: 5px;
-}
-.term-progress-track {
-  height: 4px; background: #1a1a1a; border-radius: 2px; overflow: hidden;
-}
-.term-progress-fill {
-  height: 100%; border-radius: 2px;
-  animation: bar-grow 1.5s ease both;
-}
-
-@keyframes bar-grow { from { width: 0 !important; } }
-
-/* 커서 */
-.cursor {
-  display: inline-block;
-  width: 8px; height: 14px;
-  background: var(--green);
-  vertical-align: middle;
-  animation: cursor-blink 1s infinite;
-  margin-left: 2px;
-}
-
-@keyframes cursor-blink {
-  0%,49% { opacity: 1; }
-  50%,100% { opacity: 0; }
-}
-
-/* 글리치 텍스트 */
-.glitch {
-  position: relative;
-  display: inline-block;
-}
-
-.glitch::before, .glitch::after {
-  content: attr(data-text);
-  position: absolute; inset: 0;
-  clip-path: inset(0);
-}
-
-.glitch::before {
-  color: #888;
-  animation: glitch-a 4s infinite;
-}
-
-.glitch::after {
-  color: var(--red);
-  animation: glitch-b 4s infinite;
-}
-
-@keyframes glitch-a {
-  0%,90%,100% { clip-path: inset(0 0 100% 0); transform: none; }
-  92% { clip-path: inset(20% 0 50% 0); transform: translateX(-3px); }
-  94% { clip-path: inset(60% 0 10% 0); transform: translateX(3px); }
-  96% { clip-path: inset(0 0 100% 0); }
-}
-
-@keyframes glitch-b {
-  0%,92%,100% { clip-path: inset(0 0 100% 0); transform: none; }
-  93% { clip-path: inset(40% 0 30% 0); transform: translateX(3px); }
-  95% { clip-path: inset(10% 0 70% 0); transform: translateX(-3px); }
-  97% { clip-path: inset(0 0 100% 0); }
-}
-
-/* 단계 박스 */
-.stage-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 10px;
-  margin: 12px 0;
-}
-
-.stage-box {
-  border: 1px solid #1a2a1a;
-  padding: 12px 10px;
-  text-align: center;
-}
-
-.stage-num {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.stage-name {
-  font-size: 10px;
-  color: var(--dim);
-  letter-spacing: 0.06em;
-  margin-bottom: 6px;
-}
-
-.stage-desc {
-  font-size: 10px;
-  color: #667;
-  line-height: 1.5;
-}
-
-.s1 .stage-num { color: #c0c8d0; }
-.s2 .stage-num { color: #999; }
-.s3 .stage-num { color: #777; }
-.s4 .stage-num { color: var(--red); }
-.s4 { border-color: #2a1a1a; background: rgba(204,34,0,0.04); }
-
-/* 최종 폭로 */
-.revelation {
-  margin-top: 48px;
-  padding: 28px;
-  border: 1px solid #ff333366;
-  background: rgba(255,51,51,0.06);
-  position: relative;
-  overflow: hidden;
-}
-
-.revelation::before {
-  content: '';
-  position: absolute; top: 0; left: -200%; width: 80%; height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255,51,51,0.1), transparent);
-  animation: rev-scan 2.5s linear infinite;
-}
-
-@keyframes rev-scan { to { left: 200%; } }
-
-.revelation-label {
-  font-size: 10px; font-weight: 700;
-  color: var(--red); letter-spacing: 0.15em;
-  margin-bottom: 16px;
-}
-
-.revelation-text {
-  font-size: 22px; font-weight: 700;
-  color: var(--red);
-  text-shadow: 0 0 24px rgba(204,34,0,0.4);
-  letter-spacing: 0.04em;
-  line-height: 1.4;
-  margin-bottom: 12px;
-}
-
-.revelation-sub {
-  font-size: 12px; color: #888; line-height: 1.8;
-}
-
-/* 최하단 경고 */
-.term-footer {
-  margin-top: 48px;
-  padding-top: 20px;
-  border-top: 1px solid #1a2a1a;
-  font-size: 10px;
-  color: #2a3a2a;
-  line-height: 1.8;
-  text-align: center;
-}
-
-/* 화면 전체 글리치 */
-@keyframes screen-glitch {
-  0%,100% { filter: none; transform: none; }
-  10% { filter: hue-rotate(90deg); transform: skewX(0.5deg); }
-  20% { filter: none; transform: none; }
-  50% { filter: brightness(1.5); }
-  55% { filter: none; }
-  70% { transform: skewX(-0.3deg); }
-  75% { transform: none; }
-}
-
-.glitch-screen {
-  animation: screen-glitch 8s infinite;
-}
-
-@media (max-width: 640px) {
-  #terminal { padding: 24px 20px; }
-  .stage-grid { grid-template-columns: repeat(2, 1fr); }
-  .sys-alert { width: calc(100vw - 40px); }
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=DM+Mono:wght@300;400;500&family=Noto+Sans+KR:wght@300;400;500;600&display=swap');
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#000;--surface:#08080e;--card:#0c0c14;
+  --line:#1a1a2a;--line2:#252538;--dim:#888899;
+  --sub:#a0a0b8;--text:#ccccdd;--bright:#e8e8f4;--white:#f4f4ff;
+  --red:#e03050;--red-dim:#8c1a2e;--red-glow:rgba(224,48,80,0.1);
+  --green:#70c488;
+}
+
+body{
+  font-family:'DM Mono',monospace;background:var(--bg);color:var(--text);
+  min-height:100vh;overflow:hidden;position:relative;
+  -webkit-font-smoothing:antialiased;font-weight:400;
+}
+
+/* ════════════════════════
+   PHASE 1 — LOADING
+════════════════════════ */
+#loading{
+  position:fixed;inset:0;background:#fff;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:100;transition:opacity 0.4s;
+}
+.load-logo{display:flex;align-items:center;gap:12px;margin-bottom:48px;opacity:0;animation:fadeUp .6s .1s cubic-bezier(.22,1,.36,1) forwards}
+.load-logo-mark{width:36px;height:36px;background:#0033AA;border-radius:7px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:600;font-family:'DM Mono',monospace}
+.load-logo-text{font-family:'Noto Sans KR',sans-serif;font-size:14px;font-weight:600;color:#0E1428;letter-spacing:-0.01em}
+.load-status{font-family:'DM Mono',monospace;font-size:11px;color:#999;margin-bottom:20px;min-height:16px;letter-spacing:0.02em;opacity:0;animation:fadeUp .5s .3s cubic-bezier(.22,1,.36,1) forwards}
+.load-bar-track{width:280px;height:2px;background:#eee;border-radius:1px;overflow:hidden;opacity:0;animation:fadeUp .5s .4s cubic-bezier(.22,1,.36,1) forwards}
+.load-bar-fill{height:100%;background:#0033AA;border-radius:1px;width:0%;transition:width .4s cubic-bezier(.22,1,.36,1)}
+
+/* ════════════════════════
+   PHASE 2 — ALERTS
+════════════════════════ */
+#alert-layer{position:fixed;inset:0;z-index:200;pointer-events:none;display:none}
+
+.sys-alert{
+  position:absolute;width:420px;
+  background:var(--card);border:1px solid var(--line2);
+  overflow:hidden;pointer-events:all;
+  opacity:0;transform:scale(0.92);
+  transition:opacity .25s cubic-bezier(.22,1,.36,1),transform .25s cubic-bezier(.22,1,.36,1);
+}
+.sys-alert.visible{opacity:1;transform:scale(1)}
+
+.alert-titlebar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:12px 16px 10px;border-bottom:1px solid var(--line2);
+  position:relative;
+}
+.alert-titlebar.red{background:var(--red-dim)}
+.alert-titlebar.dark{background:var(--surface)}
+
+.alert-titlebar-main{display:flex;align-items:center;gap:10px}
+.alert-icon{font-size:16px;line-height:1}
+.alert-titlebar-title{font-size:11px;font-weight:500;color:var(--white);letter-spacing:0.12em;text-transform:uppercase}
+.alert-titlebar-sub{font-size:8px;color:var(--sub);letter-spacing:0.14em;text-transform:uppercase;margin-top:2px}
+.alert-titlebar-x{font-size:14px;cursor:pointer;color:var(--dim);line-height:1;flex-shrink:0}
+
+.alert-body{padding:16px 18px 14px}
+.alert-body h4{font-size:12px;font-weight:500;color:var(--white);letter-spacing:0.06em;margin-bottom:8px}
+.alert-body p{font-size:11px;color:var(--text);line-height:1.7;margin-bottom:12px}
+.alert-code{font-size:10px;color:var(--red);background:var(--surface);border:1px solid var(--line2);padding:6px 10px;margin-bottom:14px;line-height:1.6;word-break:break-all;letter-spacing:0.02em}
+.alert-btns{display:flex;gap:8px;justify-content:flex-end;border-top:1px solid var(--line);padding-top:12px}
+.alert-btn{
+  font-family:'DM Mono',monospace;font-size:10px;font-weight:500;
+  padding:6px 16px;cursor:pointer;border:1px solid var(--line2);
+  background:var(--surface);color:var(--sub);letter-spacing:0.06em;
+  text-transform:uppercase;transition:all .15s;
+}
+.alert-btn:hover{background:var(--line);color:var(--bright);border-color:var(--dim)}
+.alert-btn.primary{background:var(--red-dim);color:var(--white);border-color:var(--red-dim)}
+.alert-btn.primary:hover{background:var(--red)}
+
+/* ════════════════════════
+   PHASE 3 — TERMINAL
+════════════════════════ */
+#terminal{position:fixed;inset:0;background:var(--bg);z-index:300;opacity:0;display:none;overflow-y:auto;padding:48px}
+
+/* scanlines */
+#terminal::before{
+  content:'';position:fixed;inset:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,255,255,0.008) 2px,rgba(255,255,255,0.008) 4px);
+  pointer-events:none;z-index:10;
+}
+/* vignette */
+#terminal::after{
+  content:'';position:fixed;inset:0;
+  background:radial-gradient(ellipse at center,transparent 40%,rgba(0,0,0,0.6) 100%);
+  pointer-events:none;z-index:10;
+}
+
+.term-content{position:relative;z-index:5;max-width:840px;margin:0 auto}
+
+/* glitch layer — for periodic distortion */
+.glitch-layer{
+  position:fixed;inset:0;pointer-events:none;z-index:8;opacity:0;
+  background:linear-gradient(0deg,transparent 40%,rgba(181,34,56,0.03) 40.5%,transparent 41%);
+  transition:opacity 0.05s;
+}
+.glitch-active .glitch-layer{opacity:1}
+.glitch-active .term-content{
+  animation:v-glitch 0.15s steps(2) forwards;
+}
+@keyframes v-glitch{
+  0%{clip-path:inset(0);filter:none}
+  25%{clip-path:inset(8% 0 85% 0);filter:hue-rotate(10deg) brightness(1.3)}
+  50%{clip-path:inset(40% 0 20% 0);filter:hue-rotate(-5deg)}
+  75%{clip-path:inset(70% 0 5% 0);filter:brightness(1.5)}
+  100%{clip-path:inset(0);filter:none}
+}
+
+/* header */
+.term-header{border:1px solid var(--line2);padding:20px 24px;margin-bottom:40px;position:relative;overflow:hidden;opacity:0}
+.term-header::before{
+  content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--red-dim),transparent);
+  animation:header-pulse 3s ease-in-out infinite;
+}
+@keyframes header-pulse{0%,100%{opacity:0.3}50%{opacity:1}}
+
+.term-header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+.term-classification{font-size:10px;font-weight:500;color:var(--red);letter-spacing:0.18em;animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.term-ts{font-size:10px;color:var(--sub);letter-spacing:0.04em}
+
+.term-title{
+  font-family:'Cormorant Garamond',serif;font-size:26px;font-weight:300;
+  color:var(--white);letter-spacing:0.02em;margin-bottom:8px;line-height:1.3;
+}
+.term-title-accent{color:var(--red)}
+.term-subtitle{font-size:11px;color:var(--sub);letter-spacing:0.08em;line-height:1.6}
+
+/* sections */
+.term-section{margin-bottom:40px;opacity:0;transition:opacity .8s cubic-bezier(.22,1,.36,1)}
+.term-section.visible{opacity:1}
+
+.term-section-label{
+  font-size:10px;font-weight:500;color:var(--white);
+  letter-spacing:0.16em;text-transform:uppercase;
+  margin-bottom:14px;display:flex;align-items:center;gap:12px;
+  padding-bottom:10px;border-bottom:1px solid var(--line2);
+}
+
+.term-line{
+  font-size:13px;color:var(--text);line-height:2;margin-bottom:2px;
+  display:flex;gap:8px;
+}
+.term-line .key{color:var(--sub);min-width:200px;flex-shrink:0;font-size:12px}
+.term-line .val-green{color:var(--green)}
+.term-line .val-green{color:var(--green)}
+.term-line .val-red{color:var(--red)}
+.term-line .val-dim{color:var(--sub)}
+.term-line .zone-title{color:var(--bright);font-weight:500;font-size:12px;margin-bottom:2px}
+
+/* REDACTED */
+.redacted{
+  display:inline;background:#2a2a3a;color:#2a2a3a;
+  padding:0 4px;cursor:pointer;position:relative;
+  transition:background .3s,color .3s;user-select:none;
+}
+.redacted:hover{background:var(--surface);color:var(--red)}
+.redacted::after{
+  content:'[REDACTED]';position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:8px;font-weight:500;color:var(--red);letter-spacing:0.1em;
+  opacity:0;transition:opacity .15s;
+}
+.redacted:hover::after{opacity:1}
+
+/* warning box */
+.term-warning{
+  border:1px solid var(--red-dim);background:var(--red-glow);
+  padding:16px 20px;margin:16px 0;position:relative;overflow:hidden;
+}
+.term-warning::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--red);
+}
+.term-warning-label{font-size:10px;font-weight:500;color:var(--red);letter-spacing:0.12em;margin-bottom:8px;text-transform:uppercase}
+.term-warning p{font-size:12px;color:var(--text);line-height:1.7}
+
+/* progress bars */
+.term-progress{margin:8px 0 14px}
+.term-progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text);margin-bottom:5px;letter-spacing:0.02em}
+.term-progress-track{height:3px;background:var(--line);overflow:hidden}
+.term-progress-fill{height:100%;animation:bar-grow 1.5s cubic-bezier(.22,1,.36,1) both}
+@keyframes bar-grow{from{width:0!important}}
+
+/* stage grid */
+.stage-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}
+.stage-box{border:1px solid var(--line);padding:16px 12px;text-align:center;transition:border-color .3s}
+.stage-num{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:300;margin-bottom:6px;line-height:1}
+.stage-name{font-size:10px;font-weight:500;color:var(--text);letter-spacing:0.1em;margin-bottom:8px;text-transform:uppercase}
+.stage-desc{font-size:10px;color:var(--sub);line-height:1.6}
+.s1 .stage-num{color:var(--text)}
+.s2 .stage-num{color:var(--sub)}
+.s3 .stage-num{color:var(--dim)}
+.s4 .stage-num{color:var(--red)}
+.s4{border-color:var(--red-dim);background:var(--red-glow)}
+
+/* revelation */
+.revelation{
+  margin-top:56px;padding:32px;
+  border:1px solid var(--red-dim);background:var(--red-glow);
+  position:relative;overflow:hidden;
+}
+.revelation::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:var(--red);opacity:0.4;
+  animation:rev-pulse 2s ease-in-out infinite;
+}
+@keyframes rev-pulse{0%,100%{opacity:0.2}50%{opacity:0.8}}
+
+.revelation-label{font-size:9px;font-weight:500;color:var(--red);letter-spacing:0.18em;margin-bottom:20px;text-transform:uppercase}
+.revelation-text{
+  font-family:'Cormorant Garamond',serif;font-size:32px;font-weight:300;
+  color:var(--white);letter-spacing:0.02em;line-height:1.4;margin-bottom:16px;
+}
+.revelation-sub{font-size:12px;color:var(--text);line-height:1.9}
+
+/* cursor */
+.cursor{display:inline-block;width:7px;height:13px;background:var(--text);vertical-align:middle;animation:cursor-blink 1s step-end infinite;margin-left:2px}
+@keyframes cursor-blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+/* footer */
+.term-footer{
+  margin-top:56px;padding-top:24px;border-top:1px solid var(--line2);
+  font-size:10px;color:var(--sub);line-height:1.9;text-align:center;
+  letter-spacing:0.04em;
+}
+
+/* flash overlay */
+#flash{position:fixed;inset:0;background:#fff;z-index:150;opacity:0;pointer-events:none}
+
+/* ── KEYFRAMES ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+/* ── RESPONSIVE ── */
+@media(max-width:640px){
+  #terminal{padding:24px 20px}
+  .stage-grid{grid-template-columns:repeat(2,1fr)}
+  .sys-alert{width:calc(100vw - 40px)}
+  .term-line{flex-direction:column;gap:2px}
+  .term-line .key{min-width:0}
 }
 </style>
 </head>
 <body>
 
-<!-- ══ PHASE 1: 로딩 ══ -->
+<!-- PHASE 1: LOADING -->
 <div id="loading">
   <div class="load-logo">
     <div class="load-logo-mark">Ψ</div>
     <span class="load-logo-text">Psionics Systems Corp.</span>
   </div>
-  <div class="load-status" id="load-msg">보안 채널 초기화 중<span class="load-dots" id="dots"></span></div>
-  <div class="load-bar-track">
-    <div class="load-bar-fill" id="load-bar"></div>
-  </div>
+  <div class="load-status" id="load-msg">보안 채널 초기화 중<span id="dots"></span></div>
+  <div class="load-bar-track"><div class="load-bar-fill" id="load-bar"></div></div>
 </div>
 
-<!-- ══ PHASE 2: 경고창 레이어 ══ -->
+<!-- PHASE 2: ALERTS -->
 <div id="alert-layer">
-
-  <div class="sys-alert" id="a1" style="top:10%; left:50%; transform:translateX(-50%)">
-    <div class="alert-titlebar">
-      <div class="alert-titlebar-main">
-        <span class="alert-icon">⚠</span>
-        <div class="alert-titlebar-texts">
-          <div class="alert-titlebar-title">WARNING</div>
-          <div class="alert-titlebar-sub">SECURITY BREACH DETECTED</div>
-        </div>
-      </div>
-      <span class="alert-titlebar-x">✕</span>
-    </div>
-    <div class="alert-body">
-      <h4>비인가 접근이 감지되었습니다</h4>
-      <p>현재 세션에서 Psionics 내부 시스템에 대한 비인가 접근 시도가 감지되었습니다. 본 활동은 기록되며, 펄스 대응 부대에 자동 통보됩니다.</p>
-      <div class="alert-code">SESSION_ID: [PSC-7734-ALPHA] // IP: 172.16.88.███ // GRID-B NODE-47</div>
-      <div class="alert-btns">
-        <button class="alert-btn">취소</button>
-        <button class="alert-btn primary">확인</button>
-      </div>
-    </div>
+  <div class="sys-alert" id="a1" style="top:8%;left:50%;margin-left:-210px">
+    <div class="alert-titlebar red"><div class="alert-titlebar-main"><span class="alert-icon">⚠</span><div><div class="alert-titlebar-title">Warning</div><div class="alert-titlebar-sub">Security Breach Detected</div></div></div><span class="alert-titlebar-x">✕</span></div>
+    <div class="alert-body"><h4>비인가 접근이 감지되었습니다</h4><p>현재 세션에서 Psionics 내부 시스템에 대한 비인가 접근 시도가 감지되었습니다. 본 활동은 기록되며, 펄스 대응 부대에 자동 통보됩니다.</p><div class="alert-code">SESSION_ID: [PSC-7734-ALPHA] // IP: 172.16.88.███ // GRID-B NODE-47</div><div class="alert-btns"><button class="alert-btn">취소</button><button class="alert-btn primary">확인</button></div></div>
   </div>
-
-  <div class="sys-alert" id="a2" style="top:7%; left:28%">
-    <div class="alert-titlebar dark">
-      <div class="alert-titlebar-main">
-        <span class="alert-icon">🔒</span>
-        <div class="alert-titlebar-texts">
-          <div class="alert-titlebar-title" style="color:#bb1a00;">DANGER</div>
-          <div class="alert-titlebar-sub">CLASSIFIED DOCUMENT ACCESS</div>
-        </div>
-      </div>
-      <span class="alert-titlebar-x">✕</span>
-    </div>
-    <div class="alert-body">
-      <h4>기밀 문서 접근 시도</h4>
-      <p>열람 권한 등급: ULTRA-RED 이상 필요. 현재 사용자 등급: CIVILIAN-BASIC. 접근이 거부되었습니다.</p>
-      <div class="alert-code">DOC_REF: PSC-INTERNAL-NV01 // CLEARANCE: DENIED // LOG: ACTIVE</div>
-      <div class="alert-btns">
-        <button class="alert-btn primary">확인</button>
-      </div>
-    </div>
+  <div class="sys-alert" id="a2" style="top:5%;left:18%">
+    <div class="alert-titlebar dark"><div class="alert-titlebar-main"><span class="alert-icon">🔒</span><div><div class="alert-titlebar-title" style="color:var(--red)">Danger</div><div class="alert-titlebar-sub">Classified Document Access</div></div></div><span class="alert-titlebar-x">✕</span></div>
+    <div class="alert-body"><h4>기밀 문서 접근 시도</h4><p>열람 권한 등급: ULTRA-RED 이상 필요. 현재 사용자 등급: CIVILIAN-BASIC. 접근이 거부되었습니다.</p><div class="alert-code">DOC_REF: PSC-INTERNAL-NV01 // CLEARANCE: DENIED // LOG: ACTIVE</div><div class="alert-btns"><button class="alert-btn primary">확인</button></div></div>
   </div>
-
-  <div class="sys-alert" id="a3" style="top:20%; right:6%">
-    <div class="alert-titlebar">
-      <div class="alert-titlebar-main">
-        <span class="alert-icon">☣</span>
-        <div class="alert-titlebar-texts">
-          <div class="alert-titlebar-title">WARNING</div>
-          <div class="alert-titlebar-sub">HAZARD ALERT — PSV-01 PATTERN</div>
-        </div>
-      </div>
-      <span class="alert-titlebar-x">✕</span>
-    </div>
-    <div class="alert-body">
-      <h4>나노 글리치 바이러스 활동 감지</h4>
-      <p>현재 세션의 뉴럴 칩 신호에서 PSV-01 패턴과 유사한 이상 활동이 감지되었습니다. 방화벽 패치 상태를 즉시 확인하십시오.</p>
-      <div class="alert-code">CHIP_STATUS: ANOMALY PSV-01: PATTERN_MATCH_78% // ACTION: QUARANTINE</div>
-      <div class="alert-btns">
-        <button class="alert-btn">무시</button>
-        <button class="alert-btn danger">즉시 패치 업데이트</button>
-      </div>
-    </div>
+  <div class="sys-alert" id="a3" style="top:22%;right:5%">
+    <div class="alert-titlebar red"><div class="alert-titlebar-main"><span class="alert-icon">☣</span><div><div class="alert-titlebar-title">Warning</div><div class="alert-titlebar-sub">Hazard Alert — PSV-01 Pattern</div></div></div><span class="alert-titlebar-x">✕</span></div>
+    <div class="alert-body"><h4>나노 글리치 바이러스 활동 감지</h4><p>현재 세션의 뉴럴 칩 신호에서 PSV-01 패턴과 유사한 이상 활동이 감지되었습니다. 방화벽 패치 상태를 즉시 확인하십시오.</p><div class="alert-code">CHIP_STATUS: ANOMALY PSV-01: PATTERN_MATCH_78% // ACTION: QUARANTINE</div><div class="alert-btns"><button class="alert-btn">무시</button><button class="alert-btn primary">즉시 패치 업데이트</button></div></div>
   </div>
-
-  <div class="sys-alert" id="a4" style="top:44%; left:8%">
-    <div class="alert-titlebar">
-      <div class="alert-titlebar-main">
-        <span class="alert-icon">⚠</span>
-        <div class="alert-titlebar-texts">
-          <div class="alert-titlebar-title">SYSTEM ERROR</div>
-          <div class="alert-titlebar-sub">INTEGRITY VIOLATION DETECTED</div>
-        </div>
-      </div>
-      <span class="alert-titlebar-x">✕</span>
-    </div>
-    <div class="alert-body">
-      <h4>시스템 무결성 침해</h4>
-      <p>Psionics 내부 네트워크의 방화벽이 우회되었습니다. 인프라 보호법 제 7조 위반. 해당 세션의 뉴럴 칩 식별자가 등록됩니다.</p>
-      <div class="alert-code">FIREWALL: BYPASSED // VIOLATION: §7 // CHIP_ID: ████-████-7734</div>
-      <div class="alert-btns">
-        <button class="alert-btn primary">확인</button>
-      </div>
-    </div>
+  <div class="sys-alert" id="a4" style="top:46%;left:6%">
+    <div class="alert-titlebar dark"><div class="alert-titlebar-main"><span class="alert-icon">⚠</span><div><div class="alert-titlebar-title" style="color:var(--red)">System Error</div><div class="alert-titlebar-sub">Integrity Violation Detected</div></div></div><span class="alert-titlebar-x">✕</span></div>
+    <div class="alert-body"><h4>시스템 무결성 침해</h4><p>Psionics 내부 네트워크의 방화벽이 우회되었습니다. 인프라 보호법 제 7조 위반. 해당 세션의 뉴럴 칩 식별자가 등록됩니다.</p><div class="alert-code">FIREWALL: BYPASSED // VIOLATION: §7 // CHIP_ID: ████-████-7734</div><div class="alert-btns"><button class="alert-btn primary">확인</button></div></div>
   </div>
-
-  <div class="sys-alert" id="a5" style="top:42%; right:4%">
-    <div class="alert-titlebar dark">
-      <div class="alert-titlebar-main">
-        <span class="alert-icon">⚡</span>
-        <div class="alert-titlebar-texts">
-          <div class="alert-titlebar-title" style="color:#bb1a00;">DANGER</div>
-          <div class="alert-titlebar-sub">PULSE RESPONSE — DISPATCH CONFIRMED</div>
-        </div>
-      </div>
-      <span class="alert-titlebar-x">✕</span>
-    </div>
-    <div class="alert-body">
-      <h4>펄스 대응 부대 출동 요청 발신됨</h4>
-      <p>비인가 시스템 접근으로 인해 펄스 대응 부대에 자동 출동 요청이 발신되었습니다. 위치: 그리드-B, 노바 스트리트 구역. 예상 도착: 2분 내.</p>
-      <div class="alert-code">PULSE_DISPATCH: CONFIRMED // ETA: 120s // UNIT: DELTA-7</div>
-      <div class="alert-btns">
-        <button class="alert-btn">요청 취소 (불가)</button>
-      </div>
-    </div>
+  <div class="sys-alert" id="a5" style="top:44%;right:3%">
+    <div class="alert-titlebar red"><div class="alert-titlebar-main"><span class="alert-icon">⚡</span><div><div class="alert-titlebar-title">Danger</div><div class="alert-titlebar-sub">Pulse Response — Dispatch Confirmed</div></div></div><span class="alert-titlebar-x">✕</span></div>
+    <div class="alert-body"><h4>펄스 대응 부대 출동 요청 발신됨</h4><p>비인가 시스템 접근으로 인해 펄스 대응 부대에 자동 출동 요청이 발신되었습니다. 위치: 그리드-B, 노바 스트리트 구역. 예상 도착: 2분 내.</p><div class="alert-code">PULSE_DISPATCH: CONFIRMED // ETA: 120s // UNIT: DELTA-7</div><div class="alert-btns"><button class="alert-btn">요청 취소 (불가)</button></div></div>
   </div>
-
-  <div class="sys-alert" id="a6" style="bottom:8%; left:50%; transform:translateX(-50%)">
-    <div class="alert-titlebar">
-      <div class="alert-titlebar-main">
-        <span class="alert-icon">📹</span>
-        <div class="alert-titlebar-texts">
-          <div class="alert-titlebar-title">WARNING</div>
-          <div class="alert-titlebar-sub">SESSION RECORDING ACTIVE</div>
-        </div>
-      </div>
-      <span class="alert-titlebar-x">✕</span>
-    </div>
-    <div class="alert-body">
-      <h4>이 세션은 기록됩니다</h4>
-      <p>현재 세션의 시각, 청각, 뉴럴 칩 활동이 Psionics 보안 서버에 실시간으로 전송되고 있습니다. 접속을 종료하더라도 기록은 유지됩니다.</p>
-      <div class="alert-code">REC: ACTIVE // NEURAL_FEED: LIVE // STORAGE: PSC-CORE-SRV</div>
-      <div class="alert-btns">
-        <button class="alert-btn primary">확인했습니다</button>
-      </div>
-    </div>
+  <div class="sys-alert" id="a6" style="bottom:6%;left:50%;margin-left:-210px">
+    <div class="alert-titlebar dark"><div class="alert-titlebar-main"><span class="alert-icon">📹</span><div><div class="alert-titlebar-title">Warning</div><div class="alert-titlebar-sub">Session Recording Active</div></div></div><span class="alert-titlebar-x">✕</span></div>
+    <div class="alert-body"><h4>이 세션은 기록됩니다</h4><p>현재 세션의 시각, 청각, 뉴럴 칩 활동이 Psionics 보안 서버에 실시간으로 전송되고 있습니다. 접속을 종료하더라도 기록은 유지됩니다.</p><div class="alert-code">REC: ACTIVE // NEURAL_FEED: LIVE // STORAGE: PSC-CORE-SRV</div><div class="alert-btns"><button class="alert-btn primary">확인했습니다</button></div></div>
   </div>
-
 </div>
 
-<!-- ══ FLASH OVERLAY ══ -->
 <div id="flash"></div>
 
-<!-- ══ PHASE 3: 터미널 ══ -->
+<!-- PHASE 3: TERMINAL -->
 <div id="terminal">
-  <div class="term-content glitch-screen" id="term-content">
+  <div class="glitch-layer"></div>
+  <div class="term-content" id="term-content">
 
-    <!-- 헤더 -->
-    <div class="term-header" id="term-header" style="opacity:0;">
+    <div class="term-header" id="term-header">
       <div class="term-header-top">
-        <div class="term-classification">⬛ ULTRA-RED - PSIONICS INTERNAL ONLY ⬛</div>
-        <div class="term-ts" id="term-ts">TIMESTAMP: ████-██-██ ██:██:██</div>
+        <div class="term-classification">⬛ ULTRA-RED — PSIONICS INTERNAL ONLY ⬛</div>
+        <div class="term-ts" id="term-ts">TIMESTAMP: Greed Year 87.██.██ ██:██:██</div>
       </div>
-      <div class="term-title">
-        <span class="glitch" data-text="PSC-INTERNAL: NV-01 나노 글리치 바이러스 보고서">
-          PSC-INTERNAL: NV-01 나노 글리치 바이러스 보고서
-        </span>
-      </div>
-      <div class="term-subtitle">문서 분류: 극비<br>무단 열람 시 인프라 보호법에 따라 처벌받을 수 있습니다.</div>
+      <div class="term-title">PSC-INTERNAL: NV-01<br><span class="term-title-accent">그리드 운영 현황</span></div>
+      <div class="term-subtitle">문서 분류: 극비 — 무단 열람 시 인프라 보호법에 따라 처벌받을 수 있습니다.</div>
     </div>
 
-    <!-- 섹션 1: 바이러스 기본 정보 -->
+    <!-- 01 -->
     <div class="term-section" id="s1">
-      <div class="term-section-label">01 - 나노 글리치 바이러스의 기본 분류</div>
-      <div class="term-line"><span class="key">공식 명칭</span><span class="val-cyan">Psionics Strain Vector-01 (PSV-01)</span></div>
-      <div class="term-line"><span class="key">최초 감지</span><span class="val-green">그리드 연도 85년, 공식 발표 없음</span></div>
-      <div class="term-line"><span class="key">전파 경로</span><span class="val-cyan">뉴럴 칩 간 나노머신 패킷 전이</span></div>
+      <div class="term-section-label">01. 나노 글리치 바이러스의 기본 분류</div>
+      <div class="term-line"><span class="key">공식 명칭</span><span class="val-green">Psionics Strain Vector-01 (PSV-01)</span></div>
+      <div class="term-line"><span class="key">최초 감지</span><span class="val-white">그리드 연도 85년, 공식 발표 없음</span></div>
+      <div class="term-line"><span class="key">전파 경로</span><span class="val-white">뉴럴 칩 간 나노머신 패킷 전이</span></div>
+      <div class="term-line"><span class="key">특성</span><span class="val-red">심장 부근의 코어 파괴 시 영구 작동 정지.</span></div>
       <div class="term-line"><span class="key">감염 속도</span><span class="val-red">초기 노출 후 72-120시간 내 1단계 진입</span></div>
       <div class="term-line"><span class="key">완치 가능 여부</span><span class="val-dim"><span class="redacted">완치 방법 현재로서는 없음. 공개 보류 결정 GY-38</span></span></div>
       <div class="term-line"><span class="key">현재 감염 추정 인원</span><span class="val-dim"><span class="redacted">전체 그리드 인구의 ██.█% 추정</span></span></div>
     </div>
 
-    <!-- 섹션 2: 진행 단계 -->
+    <!-- 02 -->
     <div class="term-section" id="s2">
-      <div class="term-section-label">02 - 감염 진행 단계 STAGE CLASSIFICATION</div>
+      <div class="term-section-label">02. 감염 진행 단계 Stage Classification</div>
       <div class="stage-grid">
-        <div class="stage-box s1">
-          <div class="stage-num">S1</div>
-          <div class="stage-name">ONSET</div>
-          <div class="stage-desc">칩 오작동<br>경미한 신체 이상<br>감각 왜곡 시작</div>
-        </div>
-        <div class="stage-box s2">
-          <div class="stage-num">S2</div>
-          <div class="stage-name">FUSION</div>
-          <div class="stage-desc">신체와 기계 부분 융합 개시<br>자아 혼란<br>고통 증가</div>
-        </div>
-        <div class="stage-box s3">
-          <div class="stage-num">S3</div>
-          <div class="stage-name">COLLAPSE</div>
-          <div class="stage-desc">자아 붕괴 진행<br>기계화 가속<br>단편적 기억 상실</div>
-        </div>
-        <div class="stage-box s4">
-          <div class="stage-num">S4</div>
-          <div class="stage-name">GLITCHER</div>
-          <div class="stage-desc">자아 소멸<br>이 단계의 사람을 글리처라고 명명.</div>
-        </div>
+        <div class="stage-box s1"><div class="stage-num">S1</div><div class="stage-name">Onset</div><div class="stage-desc">칩 오작동<br>경미한 신체 이상<br>감각 왜곡 시작</div></div>
+        <div class="stage-box s2"><div class="stage-num">S2</div><div class="stage-name">Fusion</div><div class="stage-desc">신체와 기계 부분 융합 개시<br>자아 혼란<br>고통 증가</div></div>
+        <div class="stage-box s3"><div class="stage-num">S3</div><div class="stage-name">Collapse</div><div class="stage-desc">자아 붕괴 진행<br>기계화 가속<br>단편적 기억 상실</div></div>
+        <div class="stage-box s4"><div class="stage-num">S4</div><div class="stage-name">Glitcher</div><div class="stage-desc">자아 소멸<br>이 단계의 사람을 글리처라고 명명.</div></div>
       </div>
-      <div class="term-line" style="margin-top:8px;"><span class="key">S1→S4 평균 소요 시간</span><span class="val-red">미패치 시 평균 14-21일</span></div>
-      <div class="term-line"><span class="key">S3 단계 언어 보유율</span><span class="val-cyan">약 34% — 이름을 부르거나 단어 발화 확인됨</span></div>
-      <div class="term-line"><span class="key">S4 후 언어 잔재</span><span class="val-dim"><span class="redacted">일부 개체 단어 발화 계속 확인됨, 공개 금지 GY-44</span></span></div>
+      <div class="term-line"><span class="key">S1→S4 평균 소요 시간</span><span class="val-red">미패치 시 평균 14-21일</span></div>
+      <div class="term-line"><span class="key">S3 단계 언어 보유율</span><span class="val-green">약 34%가 이름을 부르거나 단어를 발화함이 확인됨</span></div>
+      <div class="term-line"><span class="key">S4 후 언어 잔재</span><span class="val-dim"><span class="redacted">일부 개체의 단어 발화가 계속 확인됨, 공개 금지 GY-44</span></span></div>
     </div>
 
-    <!-- 섹션 3: 신규 변종 -->
+    <!-- 03 -->
     <div class="term-section" id="s3">
-      <div class="term-section-label">03 - ⚠ 신규 변종 긴급 경보 — NEW STRAIN PSV-02</div>
-      <div class="term-warning">
-        <div class="term-warning-label">🔴 위험도: CRITICAL<br>발견: 3개월 전<br>공개 여부: 미정</div>
-        <p>신규 변종 PSV-02는 기존 개체와 다른 행동 패턴을 보입니다. 본 변종의 출현은 PSV-01이 단순 바이러스를 넘어 적응적 진화를 시작했음을 시사합니다.</p>
-      </div>
+      <div class="term-section-label">03. ⚠ 신규 변종 긴급 경보 — New Strain PSV-02</div>
+      <div class="term-warning"><div class="term-warning-label">🔴 위험도: CRITICAL — 발견: 3개월 전 — 공개 여부: 미정</div><p>신규 변종 PSV-02는 기존 개체와 다른 행동 패턴을 보입니다. 본 변종의 출현은 PSV-01이 단순 바이러스를 넘어 적응적 진화를 시작했음을 시사합니다.</p></div>
       <div class="term-line"><span class="key">공격 개시 패턴</span><span class="val-red">즉각 공격 없음 — 관찰 후 행동</span></div>
-      <div class="term-line"><span class="key">관찰 시간</span><span class="val-cyan">평균 18-240초 정지 후 행동 개시</span></div>
+      <div class="term-line"><span class="key">관찰 시간</span><span class="val-white">평균 18-240초 정지 후 행동 개시</span></div>
       <div class="term-line"><span class="key">언어 능력</span><span class="val-red">피해자 이름 호명 사례 다수 확인</span></div>
       <div class="term-line"><span class="key">방화벽 패치 저항성</span><span class="val-dim"><span class="redacted">기존 패치 효과 ██% 감소 확인</span></span></div>
       <div class="term-line"><span class="key">펄스 제압 성공률</span><span class="val-dim"><span class="redacted">기존 대비 ██% 저하 — 대응 프로토콜 갱신 필요</span></span></div>
-      <div class="term-line"><span class="key">내부 코드명</span><span class="val-cyan">WATCHER</span></div>
+      <div class="term-line"><span class="key">내부 코드명</span><span class="val-green"><b>WATCHER</b></span></div>
     </div>
 
-    <!-- 섹션 4: 패치 데이터 -->
+    <!-- 04 -->
     <div class="term-section" id="s4">
-      <div class="term-section-label">04 - 방화벽 패치 효과성 내부 분석</div>
-      <div class="term-progress">
-        <div class="term-progress-label"><span>공식 발표 효과성</span><span class="val-green">98.7%</span></div>
-        <div class="term-progress-track"><div class="term-progress-fill" style="width:98.7%; background:#555; animation-delay:0.2s;"></div></div>
-      </div>
-      <div class="term-progress">
-        <div class="term-progress-label"><span>내부 측정 효과성</span><span class="val-red"><span class="redacted">██.█%</span></span></div>
-        <div class="term-progress-track"><div class="term-progress-fill" style="width:30%; background:var(--red); animation-delay:0.6s;"></div></div>
-      </div>
-      <div class="term-progress">
-        <div class="term-progress-label"><span>PSV-02 대응 효과성</span><span class="val-red"><span class="redacted">██.█%</span></span></div>
-        <div class="term-progress-track"><div class="term-progress-fill" style="width:8%; background:#661100; animation-delay:1s;"></div></div>
-      </div>
-      <div class="term-line" style="margin-top:12px;"><span class="key">패치 후 감염 보고 건수</span><span class="val-dim"><span class="redacted">GY-47 Q2: ████건, 공개 0건</span></span></div>
-      <div class="term-line"><span class="key">내부 결론</span><span class="val-dim"><span class="redacted">패치는 감염을 지연할 뿐 차단하지 않음</span></span></div>
+      <div class="term-section-label">04. 방화벽 패치 효과성 내부 분석</div>
+      <div class="term-progress"><div class="term-progress-label"><span>공식 발표 효과성</span><span class="val-green">98.7%</span></div><div class="term-progress-track"><div class="term-progress-fill" style="width:98.7%;background:var(--dim);animation-delay:0.2s"></div></div></div>
+      <div class="term-progress"><div class="term-progress-label"><span>내부 측정 효과성</span><span class="val-red"><span class="redacted">██.█%</span></span></div><div class="term-progress-track"><div class="term-progress-fill" style="width:85%;background:var(--red);animation-delay:0.6s"></div></div></div>
+      <div class="term-progress"><div class="term-progress-label"><span>PSV-02 대응 효과성</span><span class="val-red"><span class="redacted">██.█%</span></span></div><div class="term-progress-track"><div class="term-progress-fill" style="width:60%;background:var(--red-dim);animation-delay:1s"></div></div></div>
+      <div class="term-line"><span class="key">패치 후 감염 보고 건수</span><span class="val-dim"><span class="redacted">GY-47 Q2: ████건, 공개 0건</span></span></div>
       <div class="term-line"><span class="key">백신 개발 현황</span><span class="val-dim"><span class="redacted">미완성. 개발 보류 결정. 구독 수익 영향 분석 진행 중</span></span></div>
     </div>
 
-    <!-- 섹션 5: 방송 사건 -->
+    <!-- 05 -->
     <div class="term-section" id="s5">
-      <div class="term-section-label">05 - 코어 활용성 진단</div>
-      <div class="term-line"><span class="key">Glitcher Core</span><span class="val-cyan"></span></div>
-      <div class="term-line"><span class="key">구성 물질</span><span class="val-red">확인 불가</span></div>
-      <div class="term-line"><span class="key">에너지 효율</span><span class="val-dim">최대 80%, 극도로 높은 효율성</span></div>
-      <div class="term-line"><span class="key">현황</span><span class="val-dim"><span class="val-dim">SPECS NET에서 활발히 거래되는 중</span></span></div>
+      <div class="term-section-label">05. 글리처 코어 활용성 진단</div>
+      <div class="term-line"><span class="val-red">Glitcher Core</span></div>
+      <div class="term-line"><span class="key">구성 물질</span><span class="val-white">확인 불가</span></div>
+      <div class="term-line"><span class="key">에너지 효율</span><span class="val-white">최대 80%, 극도로 높은 효율성</span></div>
+      <div class="term-line"><span class="key">현황</span><span class="val-green">SPECS NET에서 활발히 거래되는 중</span></div>
     </div>
 
-    <!-- 섹션 6: 그리드 구역 내부 분류 -->
+    <!-- 06 -->
     <div class="term-section" id="s6">
-      <div class="term-section-label">06 - 그리드 구역 내부 분류 — GRID ZONE CLASSIFICATION</div>
-
-      <div class="term-line" style="color:var(--text);font-weight:700;margin-bottom:4px;">▸ GRID-A // 코어 지구</div>
-      <div class="term-line"><span class="key">공식 분류</span><span class="val-cyan">Psionics 본사 + 최상위 거주 구역</span></div>
-      <div class="term-line"><span class="key">환경</span><span class="val-green">완전 자동화 — 온습도, 공기 정제, 조명 제어</span></div>
-      <div class="term-line"><span class="key">입주 조건</span><span class="val-cyan">준수 점수 950+</span></div>
-      <div class="term-line"><span class="key">냄새</span><span class="val-green">없음 — 공기 자체가 정제됨</span></div>
-      <div class="term-line"><span class="key">소음</span><span class="val-green">제어됨 — 발소리 흡수 바닥재</span></div>
-      <div class="term-line"><span class="key">글리처 사고</span><span class="val-dim"><span class="redacted">기록 존재 — 인프라 보호법 §7에 의해 공개 기록 0건 처리</span></span></div>
-      <div class="term-line"><span class="key">구형 파츠 소지자</span><span class="val-red">즉시 검문 대상</span></div>
-
-      <div style="height:20px;"></div>
-
-      <div class="term-line" style="color:var(--text);font-weight:700;margin-bottom:4px;">▸ GRID-B // 일반 지구</div>
-      <div class="term-line"><span class="key">공식 분류</span><span class="val-cyan">혼합 주거·상업 구역</span></div>
-      <div class="term-line"><span class="key">야간</span><span class="val-cyan">네온 홍수 — 모든 실루엣이 평등해지는 시간</span></div>
-      <div class="term-line"><span class="key">주간</span><span class="val-dim">녹슨 배선 노출 — 의수 등급 차이 식별 가능</span></div>
-      <div class="term-line"><span class="key">글리처 출몰</span><span class="val-red">보통 — 자치 방위원 진압, 간혹 실패 시 구역 봉쇄</span></div>
-      <div class="term-line"><span class="key">봉쇄 구역 현황</span><span class="val-dim"><span class="redacted">1개 블록 → 현재 3개 블록 확장. 공식 사유: 정비 검토</span></span></div>
-
-      <div style="height:20px;"></div>
-
-      <div class="term-line" style="color:var(--text);font-weight:700;margin-bottom:4px;">▸ GRID-C // 산업 지구 (펌프 타운)</div>
-      <div class="term-line"><span class="key">공식 분류</span><span class="val-dim">수력·양수 발전 댐 주변 산업 하청 구역</span></div>
-      <div class="term-line"><span class="key">환경</span><span class="val-red">산성비 상시 — 기계유, 오염수, 녹슨 쇠 냄새가 공기 자체</span></div>
-      <div class="term-line"><span class="key">조명</span><span class="val-dim">하늘 없음 — 파이프가 덮음. 밤낮 구분 없음. 댐 비상등 주황빛만</span></div>
-      <div class="term-line"><span class="key">글리처 출몰</span><span class="val-red">높음 — 산업 파츠 융합 대형 개체 다수</span></div>
-      <div class="term-line"><span class="key">방위</span><span class="val-dim"><span class="redacted">사실상 공백 — 파이프 미로로 방위원 진입 불가</span></span></div>
-      <div class="term-line"><span class="key">주민</span><span class="val-dim">하청 노동자 · 수배자 · 갈 데 없는 사람</span></div>
-      <div class="term-line"><span class="key">불문율</span><span class="val-cyan">서로 건드리지 않기 — 유일한 규칙</span></div>
-
-      <div style="height:20px;"></div>
-
-      <div class="term-line" style="color:var(--text);font-weight:700;margin-bottom:4px;">▸ GRID-D // 폐기 지구</div>
-      <div class="term-line"><span class="key">공식 분류</span><span class="val-red">비거주 폐기 구역 — 공식 거주 불가</span></div>
-      <div class="term-line"><span class="key">인프라</span><span class="val-red">전력 없음 · 수도 없음 · Psionics 관리 대상 외</span></div>
-      <div class="term-line"><span class="key">글리처 밀도</span><span class="val-red">매우 높음 — 펄스 자정 작전 정기 실시</span></div>
-      <div class="term-line"><span class="key">실제 거주민</span><span class="val-dim"><span class="redacted">확인 불가 (공식 입장) — 비공식 추정 ████명</span></span></div>
-      <div class="term-line"><span class="key">딥 그리드</span><span class="val-dim"><span class="redacted">지하 수몰층 — 전쟁 전 인프라 자동 가동 중이라는 제보 다수. 공식: 존재하지 않음</span></span></div>
+      <div class="term-section-label">06. PULSE 내부 운용 보고서</div>
+      <div class="term-line"><span class="key">분류</span><span class="val-white">Psionics Systems Corporation 산하 방위 조직</span></div>
+      <div class="term-line"><span class="key">강화 사항</span><span class="val-white">유전자 가위 + 최상급 사이버네틱스</span></div>
+      <div class="term-line"><span class="key">주둔지</span><span class="val-white">그리드-A 전역</span></div>
+      <div class="term-line"><span class="key">식별</span><span class="val-white">Psionics 흑색 강화 유니폼 착용.</span></div>
+      <div class="term-line"><span class="key">주요 임무</span><span class="val-red">그리드-A 및 그리드-B 경비, 글리처 출몰 시 즉각 제압</span></div>
+      <div class="term-line"><span class="key">대원 칩 연동</span><span class="val-dim"><span class="redacted">뉴럴 칩 심층 연동 적용중. 감정 억제, 지휘 계통 직결</span></span></div>
+      <div class="term-line"><span class="key">입대 경위</span><span class="val-dim">다수가 그리드-B,C 출신.</span></div>
+      <div class="term-line"><span class="key">실험 프로그램</span><span class="val-dim"><span class="redacted">두뇌 기계화 실험체 운용. 부적합 판정 시 민간인 신분 강제 부여 후 방출</span></span></div>
     </div>
 
-    <!-- 섹션 7: 펄스 내부 파일 -->
+    <!-- 07 -->
     <div class="term-section" id="s7">
-      <div class="term-section-label">07 - 펄스 (PULSE) — 내부 운용 보고서</div>
-      <div class="term-line"><span class="key">분류</span><span class="val-cyan">Psionics Systems Corp. 직속 PMC</span></div>
-      <div class="term-line"><span class="key">강화 사항</span><span class="val-cyan">유전자 가위 + 최상급 사이버네틱스</span></div>
-      <div class="term-line"><span class="key">주둔지</span><span class="val-green">그리드-A 전역</span></div>
-      <div class="term-line"><span class="key">식별</span><span class="val-green">순백색 강화 장갑 + Psionics 로고</span></div>
-      <div class="term-line"><span class="key">주요 임무</span><span class="val-cyan">코어 경비 · 글리처 출몰 시 즉각 제압 · 흔적 은폐</span></div>
-      <div class="term-line"><span class="key">하위 그리드 출동 사유</span><span class="val-red">"정리"할 것이 있을 때만</span></div>
-      <div class="term-line"><span class="key">대원 칩 연동</span><span class="val-dim"><span class="redacted">뇌 칩 심층 연동 — 감정 억제 · 지휘 계통 직결</span></span></div>
-      <div class="term-line"><span class="key">입대 경위</span><span class="val-dim">다수가 그리드-C 출신 — 탈출 수단으로 선택</span></div>
-      <div class="term-line"><span class="key">실험 프로그램</span><span class="val-dim"><span class="redacted">뇌 기계화 실험체 운용 — 부적합 판정 시 민간인 신분 강제 부여 후 방출</span></span></div>
-      <div class="term-line"><span class="key">방출 사유 비공개율</span><span class="val-dim"><span class="redacted">100% — 사유 필드 전원 검열 처리</span></span></div>
-
-      <div class="term-warning" style="margin-top:16px;">
-        <div class="term-warning-label">내부 참고 사항</div>
-        <p>최근 그리드-B 펄스 순찰 빈도 감소 확인. 대원이 그리드-A로 회수되는 중이라는 보고와, 지하로 투입되고 있다는 보고가 상충함. 어느 쪽이 사실인지 확인되지 않음.</p>
-      </div>
+      <div class="term-section-label">07. 비공인 네트워크 활동 보고</div>
+      <div class="term-line"><span class="val-red"><b>SPECS-NET</b></span></div>
+      <div class="term-line"><span class="key">분류</span><span class="val-white">그리드 간 이동 중개, 부품 밀거래, 글리처 파츠 매매, 의뢰 알선</span></div>
+      <div class="term-line"><span class="key">조직 형태</span><span class="val-white">느슨한 브로커 연결망. 의뢰인은 전면 익명.</span></div>
+      <div class="term-line"><span class="key">수익 모델</span><span class="val-white">중개 수수료... 그리고 이것저것.</span></div>
+      <div class="term-line"><span class="key">주요 거점</span><span class="val-dim">그리드-B, 그리드-C에 거점이 다수 위치.</span></div>
+      <div class="term-line"><span class="key">Psionics 입장</span><span class="val-dim"><span class="redacted">묵인 중. 글리처 개체 수 감소에 기여하므로 완전 단속 보류 결정됨. 필요 시 활용 가능 자원으로 분류하겠음.</span></span></div>
     </div>
 
-    <!-- 섹션 8: 스펙스 넷 -->
+    <!-- 08 -->
     <div class="term-section" id="s8">
-      <div class="term-section-label">08 - SPECS NET — 비공인 네트워크 활동 보고</div>
-      <div class="term-line"><span class="key">분류</span><span class="val-cyan">그리드 간 이동 중개 · 부품 밀거래 · 글리처 파츠 매매</span></div>
-      <div class="term-line"><span class="key">조직 형태</span><span class="val-green">느슨한 브로커 연결망 — 특정 리더 없음</span></div>
-      <div class="term-line"><span class="key">수익 모델</span><span class="val-green">중개 수수료 기반</span></div>
-      <div class="term-line"><span class="key">의뢰 수신</span><span class="val-cyan">암호화 단말 — 수락 시 위치/대상 정보만 표시. 의뢰인 전면 익명</span></div>
-      <div class="term-line"><span class="key">보수 지급</span><span class="val-cyan">글리처 코어 반납 시 크레딧 자동 입금</span></div>
-      <div class="term-line"><span class="key">분쟁 처리</span><span class="val-red">항의 창구 없음 — 보수 누락 시 구제 불가</span></div>
-      <div class="term-line"><span class="key">신뢰 기반</span><span class="val-red">이해관계 기반 — 배신도 거래의 일부</span></div>
-      <div class="term-line"><span class="key">주요 거점</span><span class="val-dim">그리드-B · C 접점 다수</span></div>
-      <div class="term-line"><span class="key">Psionics 입장</span><span class="val-dim"><span class="redacted">목인 중 — 글리처 개체 수 감소에 기여하므로 완전 단속 보류. 필요 시 활용 가능 자원으로 분류</span></span></div>
+      <div class="term-section-label">08. 위협 단체 평가 보고서</div>
+      <div class="term-line"><span class="val-red"><b>순수육체주의자</b></span></div>
+      <div class="term-warning"><div class="term-warning-label">Threat Level: High. Psionics 지정 반사회 단체</div><p>신체 개조와 뉴럴 칩을 인간성 훼손으로 규정, 극렬 반대. 기계화된 인간을 "이미 죽은 사람"으로 취급.</p></div>
+      <div class="term-line"><span class="key">핵심 신조</span><span class="val-red">뉴럴 칩은 인간성을 저해한다. 진정한 인간 회복을 위해 신체 개조를 되돌리고 뉴럴 칩을 제거해야 한다.</span></div>
+      <div class="term-line"><span class="key">자체 칩 제거 시술</span><span class="val-red">성공률 극히 낮음. 환각 및 환상통 등의 부작용이 심각하나 그것이 '진짜 인간'이 되기 위한 대가라고 믿음.</span></div>
+      <div class="term-line"><span class="key">주요 활동</span><span class="val-white">개조 시술소 습격, 부품 운송 차량 탈취, 폭력적 시위 다수 보고됨</span></div>
+      <div class="term-line"><span class="key">조직 형태</span><span class="val-dim">소규모 셀 단위, 그리드-B에 다수 분포함. 미개조 인간이 다수 포함되어 있어 그리드-C, 그리드-D에서는 극히 드물게 활동하는 것으로 생각됨.</span></div>
+      <div class="term-line"><span class="key">내부 위협 판정</span><span class="val-dim"><span class="redacted">개개인의 신체 능력이 낮아 위협은 미미한 정도이나, 조직 규모 확대 추세에 있음.</span></span></div>
+      <div style="margin-top:14px;font-size:11px;color:var(--sub);line-height:1.6">의심 활동 발견 시 HUD 경보 채널 즉시 신고 요망.</div>
     </div>
 
-    <!-- 섹션 9: 순수육체주의자 -->
-    <div class="term-section" id="s9">
-      <div class="term-section-label">09 - 순수육체주의자 — 위협 단체 평가 보고서</div>
-
-      <div class="term-warning">
-        <div class="term-warning-label">THREAT LEVEL: HIGH — Psionics 지정 반사회 단체</div>
-        <p>신체 개조와 뇌 칩을 인간성 훼손으로 규정, 극렬 반대. 기계화된 인간을 "이미 죽은 사람"으로 취급.</p>
-      </div>
-
-      <div class="term-line"><span class="key">핵심 신조</span><span class="val-red">칩 제거 = 진정한 인간 회복</span></div>
-      <div class="term-line"><span class="key">자체 칩 제거 시술</span><span class="val-red">시도 중 — 성공률 극히 낮음. 후유증 심각</span></div>
-      <div class="term-line"><span class="key">주요 활동</span><span class="val-red">개조 시술소 습격 · 부품 운송 차량 탈취 · 폭력적 시위</span></div>
-      <div class="term-line"><span class="key">조직 형태</span><span class="val-dim">소규모 셀 단위 — 그리드-B 이하 분포</span></div>
-      <div class="term-line"><span class="key">펄스 소탕 현황</span><span class="val-dim">정기 실시 — 뿌리 뽑히지 않음</span></div>
-      <div class="term-line"><span class="key">내부 위협 판정</span><span class="val-dim"><span class="redacted">에코테러리스트와 동급 지정. 단, 조직 규모 확대 추세 — 과소평가 경고</span></span></div>
-      <div class="term-line"><span class="key">주의 대상 발언</span><span class="val-dim"><span class="redacted">"패치가 바이러스다" 방송 이후 가입자 급증 추정 — 정확 수치 미확인</span></span></div>
-
-      <div style="margin-top:14px;font-size:11px;color:#333;line-height:1.6;">의심 활동 발견 시 HUD 경보 채널 즉시 신고. 신고자 준수 점수 가산 적용.</div>
-    </div>
-
-    <!-- 최종 폭로 -->
-    <div class="revelation" id="revelation" style="opacity:0;">
-      <div class="revelation-label">⬛ INTERNAL SUMMARY — ULTRA-RED  그리드 86년 ⬛</div>
+    <!-- REVELATION -->
+    <div class="revelation" id="revelation" style="opacity:0">
+      <div class="revelation-label">⬛ Internal Summary, 그리드 86년 ⬛</div>
       <div class="revelation-text" id="rev-text"></div>
       <div class="revelation-sub" id="rev-sub"></div>
     </div>
 
-    <!-- 터미널 푸터 -->
-    <div class="term-footer" id="term-footer" style="opacity:0;">
+    <div class="term-footer" id="term-footer" style="opacity:0">
       본 문서에 접근한 사실이 기록되었습니다. PSC-INTERNAL SECURITY PROTOCOL ACTIVE<br>
-      인프라 보호법 제 11조 - 무단 열람 시 최대 징역 25년 또는 의무 재교육 프로그램 적용<br>
-      <span style="color:#1a2a1a;"> 실시간 열람 로그 생성 중. </span>
+      인프라 보호법 제 11조 — 무단 열람 시 최대 징역 25년 또는 의무 재교육 프로그램 적용<br>
+      <span style="color:var(--dim)">실시간 열람 로그 생성 중.</span>
     </div>
 
   </div>
 </div>
 
 <script>
-const $ = id => document.getElementById(id);
+const $=id=>document.getElementById(id);
 
-/* ══════════════════════
-   PHASE 1: 로딩
-══════════════════════ */
-const msgs = [
-  '보안 채널 초기화 중',
-  '뉴럴 칩 인증 확인 중',
-  '구독 데이터 불러오는 중',
-  '보안 레벨 검증 중',
-  '내부 서버 접속 중',
-  '접근 권한 확인 중',
-];
+/* ═══ PHASE 1: LOADING ═══ */
+const msgs=['보안 채널 초기화 중','뉴럴 칩 인증 확인 중','구독 데이터 불러오는 중','보안 레벨 검증 중','내부 서버 접속 중','접근 권한 확인 중'];
+let msgIdx=0,dotCount=0;
+const loadMsg=$('load-msg'),dots=$('dots'),bar=$('load-bar');
 
-let msgIdx = 0;
-const loadMsg = $('load-msg');
-const dots = $('dots');
-const bar = $('load-bar');
+const dotTimer=setInterval(()=>{dotCount=(dotCount+1)%4;if(dots)dots.textContent='.'.repeat(dotCount)},350);
+const msgTimer=setInterval(()=>{msgIdx=(msgIdx+1)%msgs.length;loadMsg.innerHTML=msgs[msgIdx]+'<span id="dots">'+(dots?dots.textContent:'')+'</span>'},700);
 
-// 점 애니메이션
-let dotCount = 0;
-const dotTimer = setInterval(() => {
-  dotCount = (dotCount + 1) % 4;
-  dots.textContent = '.'.repeat(dotCount);
-}, 350);
-
-// 메시지 순환
-const msgTimer = setInterval(() => {
-  msgIdx = (msgIdx + 1) % msgs.length;
-  loadMsg.innerHTML = msgs[msgIdx] + '<span id="dots">' + dots.textContent + '</span>';
-}, 700);
-
-// 진행 바
-let progress = 0;
-const barStops = [15, 28, 45, 58, 72, 81, 91];
-let stopIdx = 0;
-
-const barTimer = setInterval(() => {
-  if (stopIdx < barStops.length) {
-    progress = barStops[stopIdx++];
-    bar.style.width = progress + '%';
-    if (progress === 91) {
-      clearInterval(barTimer);
-      // 91%에서 멈추고 깜빡임
-      setTimeout(() => { bar.style.background = '#cc2200'; }, 400);
-      setTimeout(startAlertPhase, 800);
+let progress=0;const stops=[15,28,45,58,72,81,91];let si=0;
+const barTimer=setInterval(()=>{
+  if(si<stops.length){progress=stops[si++];bar.style.width=progress+'%';
+    if(progress===91){clearInterval(barTimer);
+      setTimeout(()=>{bar.style.background='#C42030'},400);
+      setTimeout(startAlertPhase,800);
     }
   }
-}, 400);
+},400);
 
-/* ══════════════════════
-   PHASE 2: 경고창
-══════════════════════ */
-function flash(cb, dur = 80) {
-  const fl = $('flash');
-  fl.style.transition = 'none';
-  fl.style.opacity = '1';
-  setTimeout(() => {
-    fl.style.transition = 'opacity 0.2s';
-    fl.style.opacity = '0';
-    if (cb) setTimeout(cb, 200);
-  }, dur);
+/* ═══ PHASE 2: ALERTS ═══ */
+function flash(cb,dur=80){
+  const fl=$('flash');fl.style.transition='none';fl.style.opacity='1';
+  setTimeout(()=>{fl.style.transition='opacity 0.2s';fl.style.opacity='0';if(cb)setTimeout(cb,200)},dur);
 }
 
-function showAlert(id, delay) {
-  setTimeout(() => {
-    flash();
-    setTimeout(() => {
-      const el = $(id);
-      el.style.display = 'block';
-      requestAnimationFrame(() => {
-        el.classList.add('visible');
-      });
-    }, 100);
-  }, delay);
+function showAlert(id,delay){
+  setTimeout(()=>{flash();
+    setTimeout(()=>{const el=$(id);el.style.display='block';requestAnimationFrame(()=>el.classList.add('visible'))},100);
+  },delay);
 }
 
-function shakeAllAlerts() {
-  ['a1','a2','a3','a4','a5','a6'].forEach(id => {
-    const el = $(id);
-    if (el) {
-      el.classList.remove('shake');
-      requestAnimationFrame(() => el.classList.add('shake'));
-    }
+function startAlertPhase(){
+  clearInterval(dotTimer);clearInterval(msgTimer);
+  $('alert-layer').style.display='block';
+  showAlert('a1',200);showAlert('a2',550);showAlert('a3',900);
+  showAlert('a4',1200);showAlert('a5',1500);showAlert('a6',1750);
+  setTimeout(()=>{flash(null,120);$('loading').style.opacity='0';setTimeout(()=>$('loading').style.display='none',400)},3200);
+  setTimeout(startBlackout,4600);
+}
+
+/* ═══ PHASE 3: BLACKOUT ═══ */
+function startBlackout(){
+  let c=0;const fi=setInterval(()=>{flash(null,50);c++;if(c>=5){clearInterval(fi);setTimeout(goBlack,200)}},120);
+}
+
+function goBlack(){
+  $('alert-layer').style.transition='opacity 0.3s';$('alert-layer').style.opacity='0';
+  const fl=$('flash');fl.style.transition='none';fl.style.background='#000';
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    fl.style.opacity='1';
+    setTimeout(()=>{
+      $('alert-layer').style.display='none';
+      const term=$('terminal');term.style.display='block';term.style.opacity='1';
+      fl.style.transition='opacity 1.5s ease';fl.style.opacity='0';
+      setTimeout(()=>{fl.style.display='none';startTerminal()},1500);
+    },600);
+  }));
+}
+
+/* ═══ TERMINAL SEQUENCE ═══ */
+function typeText(el,text,speed=70){
+  return new Promise(resolve=>{el.textContent='';let i=0;
+    const t=setInterval(()=>{el.textContent+=text[i++];if(i>=text.length){clearInterval(t);resolve()}},speed);
   });
 }
 
-function startAlertPhase() {
-  clearInterval(dotTimer);
-  clearInterval(msgTimer);
-
-  const layer = $('alert-layer');
-  layer.style.display = 'block';
-
-  // 로딩 화면 흔들기
-  $('loading').style.animation = 'alert-shake 0.3s ease';
-
-  showAlert('a1', 200);
-  showAlert('a2', 600);
-  showAlert('a3', 1000);
-  showAlert('a4', 1350);
-  showAlert('a5', 1650);
-  showAlert('a6', 1900);
-
-  // 2600ms: 전체 흔들기
-  setTimeout(shakeAllAlerts, 2600);
-  setTimeout(shakeAllAlerts, 3100);
-
-  // 3600ms: 로딩 화면 사라짐 + 플래시
-  setTimeout(() => {
-    flash(null, 120);
-    $('loading').style.opacity = '0';
-    setTimeout(() => { $('loading').style.display = 'none'; }, 300);
-  }, 3600);
-
-  // 4200ms: 또 흔들기
-  setTimeout(shakeAllAlerts, 4200);
-
-  // 5000ms: 블랙아웃
-  setTimeout(startBlackout, 5000);
-}
-
-/* ══════════════════════
-   PHASE 3: 블랙아웃 → 터미널
-══════════════════════ */
-function startBlackout() {
-  // 여러 번 플래시
-  let count = 0;
-  const flashInterval = setInterval(() => {
-    flash(null, 60);
-    count++;
-    if (count >= 4) {
-      clearInterval(flashInterval);
-      setTimeout(goBlack, 200);
-    }
-  }, 150);
-}
-
-function goBlack() {
-  // 경고창 레이어 숨김
-  $('alert-layer').style.transition = 'opacity 0.3s';
-  $('alert-layer').style.opacity = '0';
-
-  // 완전 블랙 — 기존 transition 강제 취소 후 즉시 적용
-  const fl = $('flash');
-  fl.style.transition = 'none';
-  fl.style.background = '#000';
-
-  // 한 프레임 뒤에 opacity 적용 (transition: none 확실히 반영)
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      fl.style.opacity = '1';
-
-      setTimeout(() => {
-        $('alert-layer').style.display = 'none';
-
-        // 터미널 표시 — opacity 1 필수
-        const term = $('terminal');
-        term.style.display = 'block';
-        term.style.opacity = '1';
-
-        // 검은 오버레이 서서히 걷어냄
-        fl.style.transition = 'opacity 1.4s ease';
-        fl.style.opacity = '0';
-
-        setTimeout(() => {
-          fl.style.display = 'none';
-          startTerminal();
-        }, 1400);
-      }, 500);
-    });
+function revealSection(id,delay){
+  return new Promise(resolve=>{
+    setTimeout(()=>{const el=$(id);el.style.opacity='1';el.classList.add('visible');resolve()},delay);
   });
 }
 
-/* ══════════════════════
-   터미널 시퀀스
-══════════════════════ */
-function typeText(el, text, speed = 18) {
-  return new Promise(resolve => {
-    el.textContent = '';
-    let i = 0;
-    const t = setInterval(() => {
-      el.textContent += text[i++];
-      if (i >= text.length) { clearInterval(t); resolve(); }
-    }, speed);
-  });
-}
-
-function revealSection(id, delay) {
-  return new Promise(resolve => {
-    setTimeout(() => {
-      const el = $(id);
-      el.style.transition = 'opacity 0.6s ease';
-      el.style.opacity = '1';
-      el.classList.add('visible');
-      resolve();
-    }, delay);
-  });
-}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
 
 async function startTerminal() {
-  // 타임스탬프
   const now = new Date();
-  const ts = `TIMESTAMP: ${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
-  $('term-ts').textContent = ts;
+  $('term-ts').textContent = `TIMESTAMP: Greed Year 87-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')} ${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}:${String(now.getSeconds()).padStart(2,'0')}`;
 
-  // 헤더 등장
+  // 헤더는 즉시 등장
   const header = $('term-header');
-  header.style.transition = 'opacity 0.8s ease';
+  header.style.transition = 'opacity 0.8s cubic-bezier(.22,1,.36,1)';
   header.style.opacity = '1';
 
-  await sleep(800);
-  await revealSection('s1', 0);
-  await sleep(1200);
-  await revealSection('s2', 0);
-  await sleep(1000);
-  await revealSection('s3', 0);
-  await sleep(1000);
-  await revealSection('s4', 0);
-  await sleep(1000);
-  await revealSection('s5', 0);
-  await sleep(1000);
-  await revealSection('s6', 0);
-  await sleep(1200);
-  await revealSection('s7', 0);
-  await sleep(1000);
-  await revealSection('s8', 0);
-  await sleep(1000);
-  await revealSection('s9', 0);
-  await sleep(1200);
+  // s1~s8: 스크롤하면 페이드인
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.classList.add('visible');
+        sectionObserver.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.08 });
 
-  // 최종 폭로
-  const rev = $('revelation');
-  rev.style.transition = 'opacity 0.8s ease';
-  rev.style.opacity = '1';
+  ['s1','s2','s3','s4','s5','s6','s7','s8'].forEach(id => {
+    const el = $(id);
+    if (el) sectionObserver.observe(el);
+  });
 
-  await sleep(600);
-
-  const revText = $('rev-text');
-  await typeText(revText, '패치가 바이러스다.', 80);
-
-  await sleep(400);
-
-  const revSub = $('rev-sub');
-  revSub.textContent = '';
-  const subContent = [
-    'PSV-01의 최초 전파 벡터는 그리드 연도 85년 의무 배포된 뉴럴 칩 펌웨어 업데이트입니다.',
-    '',
-    '매우 낮은 확률로 발생하는 일종의 버그이며, 감염자에게 물릴 시에도 감염됩니다.',
-    '',
-    '이전 버전의 치명적인 오류로 인해 롤백은 불가하며, 현재 백신은 없습니다.',
-    '',
-    '다만, Psyonics에서는 고의적으로 백신 개발을 늦추고 있다는 의혹이 있습니다.',
-    '',
-    '누구도, 언제 어디서 나노 글리치가 발현할 지 모르는 상태로, 머릿속 깊숙이 폭탄을 품고 살아갑니다.',
-  ];
-
-  for (const line of subContent) {
-    await sleep(40);
-    revSub.innerHTML += (line || '<br>');
+  // revelation: 스크롤로 진입하면 타이핑 시작
+  const revEl = $('revelation');
+  if (revEl) {
+    const revObserver = new IntersectionObserver(async (entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          revObserver.unobserve(e.target);
+          revEl.style.transition = 'opacity 0.8s';
+          revEl.style.opacity = '1';
+          await sleep(400);
+          await typeText($('rev-text'), '패치가 바이러스의 원인입니다.', 70);
+          await sleep(300);
+          const revSub = $('rev-sub');
+          revSub.textContent = '';
+          const lines = [
+            'PSV-01의 최초 전파 벡터는 그리드 연도 85년 의무 배포된 뉴럴 칩 펌웨어 업데이트입니다.','',
+            '매우 낮은 확률로 발생하는 일종의 버그이며, 감염자에게 물릴 시에도 감염됩니다.','',
+            '이전 버전의 치명적인 오류로 인해 롤백은 불가하며, 현재 백신은 없습니다.','',
+            '다만, Psyonics에서는 고의적으로 백신 개발을 늦추고 있다는 의혹이 있습니다.','',
+            '누구도, 언제 어디서 나노 글리치가 발현할 지 모르는 상태로, 머릿속 깊숙이 폭탄을 품고 살아갑니다.',
+          ];
+          for (const l of lines) { await sleep(40); revSub.innerHTML += (l || '<br>'); }
+          revSub.innerHTML += ' <span class="cursor"></span>';
+          await sleep(600);
+          const footer = $('term-footer');
+          footer.style.transition = 'opacity 0.6s';
+          footer.style.opacity = '1';
+        }
+      }
+    }, { threshold: 0.15 });
+    revObserver.observe(revEl);
   }
 
-  // 마지막 커서
-  revSub.innerHTML += ' <span class="cursor"></span>';
-
-  await sleep(800);
-
-  const footer = $('term-footer');
-  footer.style.transition = 'opacity 0.6s';
-  footer.style.opacity = '1';
-
-  // 이후 주기적 글리치
-  setInterval(() => {
-    const term = $('term-content');
-    term.style.filter = 'hue-rotate(5deg) brightness(1.1)';
-    setTimeout(() => { term.style.filter = 'none'; }, 80);
-  }, 7000);
+  startPeriodicGlitch();
 }
 
-function sleep(ms) {
-  return new Promise(r => setTimeout(r, ms));
+function startPeriodicGlitch(){
+  function doGlitch(){
+    const term=$('terminal');
+    term.classList.add('glitch-active');
+    setTimeout(()=>term.classList.remove('glitch-active'),150);
+  }
+  // random intervals between 4-10s
+  function schedule(){
+    const delay=4000+Math.random()*6000;
+    setTimeout(()=>{doGlitch();schedule()},delay);
+  }
+  schedule();
 }
 
-// 경고창 버튼 — 클릭해도 닫히지 않음
-document.querySelectorAll('.alert-btn, .alert-titlebar-x').forEach(btn => {
-  btn.addEventListener('click', e => {
-    e.preventDefault();
-    // 흔들림만
-    const alert = btn.closest('.sys-alert');
-    if (alert) {
-      alert.classList.remove('shake');
-      requestAnimationFrame(() => alert.classList.add('shake'));
-    }
-  });
+// alert buttons — click does nothing except brief flash
+document.querySelectorAll('.alert-btn,.alert-titlebar-x').forEach(btn=>{
+  btn.addEventListener('click',e=>{e.preventDefault();flash(null,40)});
 });
 </script>
 </body>
