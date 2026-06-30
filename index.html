@@ -292,11 +292,22 @@ nav {
   animation:hero-line-grow 0.7s 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
 }
 .hero h1 {
-  font-family:'Cormorant Garamond',serif;font-size:clamp(44px,5.5vw,76px);font-weight:300;
-  line-height:1.02;letter-spacing:-0.03em;color:var(--ink);margin-bottom:28px;
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(56px, 7vw, 104px);
+  font-weight:300;
+  line-height:0.95;
+  letter-spacing:-0.04em;
+  color:var(--ink);
+  margin-bottom:32px;
   opacity:0;animation:fadeUp 0.7s 0.4s cubic-bezier(0.22,1,0.36,1) forwards;
 }
-.hero h1 em { font-style:italic;color:var(--blue); }
+.hero h1 em {
+  font-style:italic;
+  color:var(--blue);
+  display:block;
+  font-size:1.1em;
+  margin-top:4px;
+}
 .hero-sub {
   font-size:16px;font-weight:300;color:var(--sub);line-height:1.9;margin-bottom:40px;max-width:400px;
   opacity:0;animation:fadeUp 0.7s 0.55s cubic-bezier(0.22,1,0.36,1) forwards;
@@ -361,6 +372,7 @@ section { padding:110px 48px;max-width:1200px;margin:0 auto;position:relative;z-
 .grid-card:hover { transform:translateY(-5px);box-shadow:0 16px 48px rgba(0,20,80,0.08);border-color:var(--blue-200); }
 .grid-card-img { width:100%;height:200px;background:linear-gradient(135deg,var(--ice) 0%,var(--frost) 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;border-bottom:1px solid var(--frost); }
 .grid-card-img::after { content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,51,170,0.04),transparent 60%); }
+.grid-card-img img { width:100%; height:100%; object-fit:cover; position:absolute; inset:0; }
 .img-placeholder-text { font-family:'DM Mono',monospace;font-size:10px;color:var(--mist);text-transform:uppercase;letter-spacing:0.15em;z-index:1; }
 .img-shimmer { position:absolute;inset:0;background:linear-gradient(90deg,transparent 30%,rgba(255,255,255,0.5) 50%,transparent 70%);background-size:800px 100%;animation:img-shimmer 2.5s infinite linear;opacity:0.6; }
 .grid-card-number { position:absolute;top:14px;right:18px;font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:300;color:rgba(0,51,170,0.06);line-height:1;user-select:none;transition:color 0.35s; }
@@ -445,20 +457,57 @@ section { padding:110px 48px;max-width:1200px;margin:0 auto;position:relative;z-
 .plan-note { font-size:11px;color:var(--mist);margin-top:10px;text-align:center; }
 
 /* ── SAFETY ── */
-.safety { display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start; }
-.safety-list { list-style:none;display:flex;flex-direction:column; }
-.safety-item { padding:24px 0;border-bottom:1px solid var(--frost);display:flex;gap:16px;align-items:flex-start; }
-.safety-item:first-child { padding-top:0; }
-.safety-icon { width:36px;height:36px;background:var(--blue-50);border:1px solid var(--blue-100);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;transition:transform 0.25s; }
-.safety-item:hover .safety-icon { transform:scale(1.1); }
-.safety-item h4 { font-size:14px;font-weight:600;color:var(--ink);margin-bottom:5px; }
-.safety-item p { font-size:13px;color:var(--sub);line-height:1.7; }
-.safety-disclaimer { background:var(--snow);border:1px solid var(--border);border-radius:14px;padding:28px;font-size:12px;color:var(--sub);line-height:1.8;position:relative;overflow:hidden; }
-.safety-disclaimer::before { content:'';position:absolute;top:0;left:-100%;width:40%;height:2px;background:linear-gradient(90deg,transparent,var(--blue-300),transparent);animation:scan-blue 5s 1s linear infinite; }
-.safety-disclaimer strong { display:block;font-size:13px;font-weight:600;color:var(--ink);margin-bottom:10px; }
-.report-box { margin-top:16px;background:var(--blue-50);border:1px solid var(--blue-100);border-radius:12px;padding:20px 24px; }
-.report-title { font-family:'DM Mono',monospace;font-size:11px;font-weight:500;color:var(--blue);letter-spacing:0.08em;margin-bottom:8px; }
-.report-text { font-size:12px;color:var(--sub);line-height:1.7; }
+/* ── SAFETY ── */
+.safety-header { margin-bottom:56px; }
+.safety-grid { display:grid; grid-template-columns:repeat(2,1fr); gap:16px; margin-bottom:40px; }
+.safety-card {
+  background:var(--snow); border:1px solid var(--border); border-radius:14px;
+  padding:28px 28px 24px; position:relative; overflow:hidden;
+  transition:transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s, border-color 0.3s;
+}
+.safety-card:hover {
+  transform:translateY(-4px);
+  box-shadow:0 12px 36px rgba(0,20,80,0.07);
+  border-color:var(--blue-200);
+}
+.safety-card-top {
+  display:flex; align-items:center; gap:14px; margin-bottom:14px;
+}
+.safety-icon {
+  width:40px; height:40px;
+  background:var(--blue-50); border:1px solid var(--blue-100); border-radius:10px;
+  display:flex; align-items:center; justify-content:center;
+  font-size:17px; flex-shrink:0;
+  transition:transform 0.25s, background 0.25s;
+}
+.safety-card:hover .safety-icon { transform:scale(1.08); background:var(--blue-100);
+}
+.safety-card h4 { font-size:15px; font-weight:600; color:var(--ink);}
+.safety-card p { font-size:13px; color:var(--sub); line-height:1.75; }
+
+.safety-bottom { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+.safety-disclaimer {
+  background:var(--snow); border:1px solid var(--border); border-radius:14px;
+  padding:28px; font-size:12px; color:var(--sub); line-height:1.8;
+  position:relative; overflow:hidden;
+}
+.safety-disclaimer::before {
+  content:''; position:absolute; top:0; left:-100%; width:40%; height:2px;
+  background:linear-gradient(90deg,transparent,var(--blue-300),transparent);
+  animation:scan-blue 5s 1s linear infinite;
+}
+.safety-disclaimer strong { display:block; font-size:14px; font-weight:600; color:var(--ink); margin-bottom:12px; }
+.report-box {
+  background:var(--blue-50); border:1px solid var(--blue-100); border-radius:14px;
+  padding:28px;
+  display:flex; flex-direction:column; justify-content:center;
+}
+.report-title {
+  font-family:'DM Mono',monospace; font-size:11px; font-weight:500;
+  color:var(--blue); letter-spacing:0.1em; text-transform:uppercase;
+  margin-bottom:10px;
+}
+.report-text { font-size:13px; color:var(--sub); line-height:1.75; }
 
 /* ── FOOTER ── */
 footer { background:var(--ink);padding:52px 48px;color:rgba(255,255,255,0.35);font-size:12px; }
@@ -477,6 +526,10 @@ footer { background:var(--ink);padding:52px 48px;color:rgba(255,255,255,0.35);fo
 /* ── RESPONSIVE ── */
 @media(max-width:900px){
   nav{padding:0 24px}.nav-links{display:none}.hero{grid-template-columns:1fr;gap:40px;padding:60px 24px}.hero-visual{display:none}.stats-bar{flex-wrap:wrap;gap:24px;padding:40px 24px}.stat-item{border-right:none;min-width:120px}section{padding:72px 24px}.products-section{padding:72px 24px}.grid-cards,.plans{grid-template-columns:1fr}.safety{grid-template-columns:1fr;gap:40px}.sub-section{padding:72px 24px}.product-block{grid-template-columns:1fr;gap:40px}.product-block.reverse{direction:ltr}.footer-inner{flex-direction:column}.footer-links{flex-wrap:wrap;gap:32px}.alert-banner{padding:10px 24px}
+}
+@media(max-width:900px){
+  .safety-grid { grid-template-columns:1fr; }
+  .safety-bottom { grid-template-columns:1fr; }
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
 </style>
@@ -536,12 +589,15 @@ footer { background:var(--ink);padding:52px 48px;color:rgba(255,255,255,0.35);fo
   <div class="hero">
     <div class="hero-content">
       <div class="hero-eyebrow">Psionics Systems Corp.</div>
-      <h1>Life,<br><em>management.</em></h1>
-      <p class="hero-sub">우리는 그리드이고, 그리드는 우리입니다.</p>
+      <h1>Life,<em>management.</em></h1>
+      <p class="hero-sub">우리는 그리드이고, 그리드는 우리입니다.</p><br><br>
       <div class="hero-actions"><a href="#plans" class="btn-primary">구독 플랜 보기</a><a href="#grid" class="btn-secondary">그리드 소개 <span>→</span></a></div>
     </div>
+   
   </div>
+  <br><br> <br><br>
 </div>
+
 
 <div class="stats-bar" id="stats-bar">
   <div class="stat-item"><div class="stat-n" data-target="99.7" data-suffix="%">0%</div><div class="stat-l">그리드 커버리지 유지</div></div>
@@ -562,10 +618,34 @@ footer { background:var(--ink);padding:52px 48px;color:rgba(255,255,255,0.35);fo
     Psionics Systems Corp.는 현대 문명을 유지하는 계층형 거주·자원 네트워크인 그리드를 설계하고 건설했습니다.<br>
     각 구역은 해당 인구의 필요에 맞게 최적화되어 있습니다.</p>
   <div class="grid-cards">
-    <div class="grid-card reveal d1"><div class="grid-card-img"><div class="img-shimmer"></div><div class="grid-card-number">A</div><span class="img-placeholder-text">Grid-A Image</span></div><div class="grid-card-body"><h3>그리드-A — 코어 지구</h3><p>Psionics 본사 및 프리미엄 거주 구역.<br>완전한 환경 제어.<br>미해결 사고 0%.</p><span class="grid-tag tag-blue">제한적 접근</span></div></div>
-    <div class="grid-card reveal d2"><div class="grid-card-img"><div class="img-shimmer"></div><div class="grid-card-number">B</div><span class="img-placeholder-text">Grid-B Image</span></div><div class="grid-card-body"><h3>그리드-B — 일반 지구</h3><p>혼합 주거·상업 구역.<br>표준 감각 필터링.<br>자치 방위원 운영 중.<br>일부 구역 현재 정비 검토에 따른 봉쇄 유지.</p><span class="grid-tag tag-green">일반 접근</span></div></div>
-    <div class="grid-card reveal d3"><div class="grid-card-img"><div class="img-shimmer"></div><div class="grid-card-number">C</div><span class="img-placeholder-text">Grid-C Image</span></div><div class="grid-card-body"><h3>그리드-C — 산업 지구</h3><p>발전·수처리·중공업 구역.<br>계약 노동 인력으로 운영.<br>높은 위험 노출 환경.<br>Psionics는 표준 보장 범위를 초과하는 책임을 지지 않습니다.</p><span class="grid-tag tag-orange">위험 구역</span></div></div>
-    <div class="grid-card reveal d4"><div class="grid-card-img"><div class="img-shimmer"></div><div class="grid-card-number">D</div><span class="img-placeholder-text">Grid-D Image</span></div><div class="grid-card-body"><h3>그리드-D — 폐기 구역</h3><p>발전·수처리·중공업 구역.<br>계약 노동 인력으로 운영.<br>높은 위험 노출 환경.<br>Psionics는 표준 보장 범위를 초과하는 책임을 지지 않습니다.</p><span class="grid-tag tag-orange">위험 구역</span></div></div>
+    <div class="grid-card reveal d1">
+      <div class="grid-card-img">
+        <img src="images/grid-A.png" alt="Grid-A">
+        <div class="grid-card-number">A</div>
+      </div>
+      <div class="grid-card-body">
+        <h3>그리드-A — 코어 지구</h3><p>Psionics 본사 및 프리미엄 거주 구역.<br>완전한 환경 제어.<br>미해결 사고 0%.</p>
+        <span class="grid-tag tag-blue">제한적 접근</span>
+      </div>
+    </div>
+    <div class="grid-card reveal d2">
+      <div class="grid-card-img">
+        <img src="images/grid-B.png" alt="Grid-B">
+        <div class="grid-card-number">B</div>
+      </div>
+      <div class="grid-card-body"><h3>그리드-B — 일반 지구</h3><p>혼합 주거·상업 구역.<br>표준 감각 필터링.<br>자치 방위원 운영 중.<br>일부 구역 현재 정비 검토에 따른 봉쇄 유지.</p><span class="grid-tag tag-green">일반 접근</span></div></div>
+    <div class="grid-card reveal d3">
+      <div class="grid-card-img">
+        <div class="img-shimmer"></div>
+          <img src="images/grid-C.png" alt="Grid-C">
+        <div class="grid-card-number">C</div>
+        </div><div class="grid-card-body"><h3>그리드-C — 산업 지구</h3><p>발전·수처리·중공업 구역.<br>계약 노동 인력으로 운영.<br>높은 위험 노출 환경.<br>Psionics는 표준 보장 범위를 초과하는 책임을 지지 않습니다.</p><span class="grid-tag tag-orange">위험 구역</span></div></div>
+    <div class="grid-card reveal d4">
+      <div class="grid-card-img">
+        <div class="img-shimmer"></div>
+          <img src="images/grid-D.png" alt="Grid-D">
+        <div class="grid-card-number">D</div>
+      </div><div class="grid-card-body"><h3>그리드-D — 폐기 구역</h3><p>발전·수처리·중공업 구역.<br>계약 노동 인력으로 운영.<br>높은 위험 노출 환경.<br>Psionics는 표준 보장 범위를 초과하는 책임을 지지 않습니다.</p><span class="grid-tag tag-orange">위험 구역</span></div></div>
   </div>
 </section></div>
 
@@ -629,30 +709,54 @@ footer { background:var(--ink);padding:52px 48px;color:rgba(255,255,255,0.35);fo
 <div class="divider"></div>
 <div class="section-wrap"><div class="orb orb-1" style="top:auto;bottom:-100px;right:-60px"></div>
 <section id="safety">
-  <div class="section-eyebrow reveal">안전 & 규정 준수</div>
-  <div class="safety">
-    <ul class="safety-list">
-      <li class="safety-item reveal d1"><div class="safety-icon">⚡</div><div><h4>펄스 대응 부대</h4><p>신체 강화로 무장한 Psionics의 전담 PMC는 모든 그리드 구역의 질서를 유지합니다.<br>모든 작전은 규제 위임 범위 내에서 수행됩니다.</p></div></li>
-      <li class="safety-item reveal d2"><div class="safety-icon">🛡</div><div><h4>나노 글리치 억제</h4><p>패치된 모든 구독자를 대상으로 글리치 바이러스 노출을 실시간 모니터링합니다.<br>감염자는 Psionics 케어 프로토콜에 따라 즉시 식별·격리·관리됩니다.<br>현재까지 그리드-A에서 확인된 사고 없음.</p></div></li>
-      <li class="safety-item reveal d3"><div class="safety-icon">🔒</div><div><h4>방화벽 패치 프로그램</h4><p>독자적인 항바이러스 칩 패치를 정기적으로 업데이트하여 신규 나노 글리치 변종에 대응합니다.<br>지속 보호를 위해 구독이 필요합니다.</p></div></li>
-      <li class="safety-item reveal d4"><div class="safety-icon">📡</div><div><h4>사고 투명성</h4><p>Psionics는 모든 그리드 구역에 분기별 안전 요약을 발행합니다.<br>코어 지구 운영 사항의 공개는 공공 안전을 위해 인프라 보호법 제 7조의 적용을 받습니다.</p></div></li>
-    </ul>
-    <div class="reveal d2">
-      <div class="safety-disclaimer"><strong>안전 부서의 입장문</strong>최근 미인가 방송을 통해 당사 방화벽 패치 프로그램에 관한 허위 정보가 유포되고 있습니다.<br><span style="color:var(--red);font-weight:600">Psionics Systems Corp.는 당사 패치 시스템이 나노 글리치 노출에 기여한다는 어떠한 주장도 단호히 부인합니다.</span><br>해당 주장은 그리드-C/D에서 활동하는 것으로 알려진 에코테러리스트 집단과 연관된 것으로 추적되며, 현재 펄스 대응 부대가 수사 중입니다.<br><br>모든 구독자께 당부드립니다.<br><strong style="font-size:12px">구독을 최신 상태로 유지하세요.</strong> 검증되지 않은 정보 채널은 공공 질서에 중대한 위협이 됩니다.<br><br><span style="color:var(--mist)">Psionics Systems Corp. 보안 공고 #224-B. 공식 문의는 그리드 준수 담당자에게 연락하십시오.</span></div>
-      <div class="report-box"><div class="report-title">의심 활동 신고</div><div class="report-text">미인가 방송을 유포하는 개인, 칩 변조 징후를 보이는 개인, 비공인 개조 서비스를 홍보하는 개인을 발견하시면 즉시 HUD 경보 채널로 신고해 주십시오. 신고는 시민의 의무입니다.</div></div>
+  <div class="safety-header">
+    <div class="section-eyebrow reveal">안전 & 규정 준수</div>
+    <h2 class="section-title reveal d1">당신의 안전이<br>우리의 사명입니다.</h2>
+  </div>
+
+  <div class="safety-grid">
+    <div class="safety-card reveal d1">
+      <div class="safety-card-top"><div class="safety-icon">⚡</div><h4>펄스 대응 부대</h4></div>
+      <p>신체 강화로 무장한 Psionics의 전담 PMC는 모든 그리드 구역의 질서를 유지합니다. 모든 작전은 규제 위임 범위 내에서 수행됩니다.</p>
+    </div>
+    <div class="safety-card reveal d2">
+      <div class="safety-card-top"><div class="safety-icon">🛡</div><h4>나노 글리치 억제</h4></div>
+      <p>패치된 모든 구독자를 대상으로 글리치 바이러스 노출을 실시간 모니터링합니다. 감염자는 Psionics 케어 프로토콜에 따라 즉시 식별·격리·관리됩니다. 현재까지 그리드-A에서 확인된 사고 없음.</p>
+    </div>
+    <div class="safety-card reveal d3">
+      <div class="safety-card-top"><div class="safety-icon">🔒</div><h4>방화벽 패치 프로그램</h4></div>
+      <p>독자적인 항바이러스 칩 패치를 정기적으로 업데이트하여 신규 나노 글리치 변종에 대응합니다. 지속 보호를 위해 구독이 필요합니다.</p>
+    </div>
+    <div class="safety-card reveal d4">
+      <div class="safety-card-top"><div class="safety-icon">📡</div><h4>사고 투명성</h4></div>
+      <p>Psionics는 모든 그리드 구역에 분기별 안전 요약을 발행합니다. 코어 지구 운영 사항의 공개는 공공 안전을 위해 인프라 보호법 제 7조의 적용을 받습니다.</p>
+    </div>
+  </div>
+
+  <div class="safety-bottom">
+    <div class="safety-disclaimer reveal d2">
+      <strong>안전 부서의 입장문</strong>
+      최근 미인가 방송을 통해 당사 방화벽 패치 프로그램에 관한 허위 정보가 유포되고 있습니다.<br>
+      <span style="color:var(--red);font-weight:600">Psionics Systems Corp.는 당사 패치 시스템이 나노 글리치 노출에 기여한다는 어떠한 주장도 단호히 부인합니다.</span><br>
+      해당 주장은 그리드-C/D에서 활동하는 것으로 알려진 에코테러리스트 집단과 연관된 것으로 추적되며, 현재 펄스 대응 부대가 수사 중입니다.<br><br>
+      <strong style="font-size:12px">구독을 최신 상태로 유지하세요.</strong>
+      검증되지 않은 정보 채널은 공공 질서에 중대한 위협이 됩니다.<br><br>
+      <span style="color:var(--mist)">Psionics Systems Corp. 보안 공고 #224-B</span>
+    </div>
+    <div class="report-box reveal d3">
+      <div class="report-title">의심 활동 신고</div>
+      <div class="report-text">미인가 방송을 유포하는 개인, 칩 변조 징후를 보이는 개인, 비공인 개조 서비스를 홍보하는 개인을 발견하시면 즉시 HUD 경보 채널로 신고해 주십시오. 신고는 시민의 의무입니다.</div>
     </div>
   </div>
 </section></div>
-
-<div class="divider"></div>
 
 <footer>
   <div class="footer-inner">
     <div><div class="footer-logo"><div class="footer-logo-mark">Ψ</div>Psionics Systems Corp.</div><div class="footer-tagline">당신의 생존이 우리의 책임입니다.</div></div>
     <div class="footer-links">
-      <div class="footer-col"><h5>제품</h5><ul><li><a href="#">뉴럴 칩 연동</a></li><li><a href="#">감각 구독</a></li><li><a href="#">방화벽 패치</a></li><li><a href="#">사이버네틱스 부문</a></li><li><a href="#">합성 영양</a></li></ul></div>
-      <div class="footer-col"><h5>그리드 서비스</h5><ul><li><a href="#">그리드-A 입주</a></li><li><a href="#">구역 관리</a></li><li><a href="#">펄스 대응</a></li><li><a href="#">사고 신고</a></li><li><a href="#">준수 센터</a></li></ul></div>
-      <div class="footer-col"><h5>회사</h5><ul><li><a href="#">Psionics 소개</a></li><li><a href="#">안전 부서</a></li><li><a href="#">채용</a></li><li><a href="#">보도자료</a></li><li><a href="#">법무 & 규정 준수</a></li></ul></div>
+      <div class="footer-col"><h5>제품</h5><ul><li><a>뉴럴 칩 연동</a></li><li><a>감각 구독</a></li><li><a>방화벽 패치</a></li><li><a>사이버네틱스 부문</a></li><li><a>합성 영양</a></li></ul></div>
+      <div class="footer-col"><h5>그리드 서비스</h5><ul><li><a>그리드-A 입주</a></li><li><a>구역 관리</a></li><li><a>펄스 대응</a></li><li><a">사고 신고</a></li><li><a>준수 센터</a></li></ul></div>
+      <div class="footer-col"><h5>회사</h5><ul><li><a>Psionics 소개</a></li><li><a>안전 부서</a></li><li><a>채용</a></li><li><a>보도자료</a></li><li><a>법무 & 규정 준수</a></li></ul></div>
     </div>
   </div>
   <div class="footer-bottom"><div>© 그리드 87년, Psionics Systems Corp. 모든 권리 보유. 인프라 보호법 적용.</div><div><span class="status-dot-footer"></span>전 시스템 정상 운영 중</div></div>
