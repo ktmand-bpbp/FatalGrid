@@ -531,7 +531,7 @@ async function startTerminal() {
           revEl.style.transition = 'opacity 0.8s';
           revEl.style.opacity = '1';
           await sleep(400);
-          await typeText($('rev-text'), '최근의 뉴럴 칩 업데이트가 바이러스의 원인입니다.', 70);
+          await typeText($('rev-text'), '패치가 바이러스의 원인입니다.', 70);
           await sleep(300);
           const revSub = $('rev-sub');
           revSub.textContent = '';
@@ -540,7 +540,7 @@ async function startTerminal() {
             '매우 낮은 확률로 발생하는 일종의 버그이며, 감염자에게 물릴 시에도 감염됩니다.','',
             '이전 버전의 치명적인 오류로 인해 롤백은 불가하며, 현재 백신은 없습니다.','',
             '다만, Psyonics에서는 고의적으로 백신 개발을 늦추고 있다는 의혹이 있습니다.','',
-            '모두가, 언제 어디서 나노 글리치가 발현할 지 모르는 상태로, 머릿속 깊숙이 폭탄을 품고 살아갑니다.',
+            '누구도, 언제 어디서 나노 글리치가 발현할 지 모르는 상태로, 머릿속 깊숙이 폭탄을 품고 살아갑니다.',
           ];
           for (const l of lines) { await sleep(40); revSub.innerHTML += (l || '<br>'); }
           revSub.innerHTML += ' <span class="cursor"></span>';
