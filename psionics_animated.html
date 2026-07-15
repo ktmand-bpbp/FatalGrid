@@ -221,11 +221,41 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
 .outro-btn:hover{box-shadow:0 0 48px rgba(0,229,255,.4);transform:translateY(-3px)}
 .outro-fine{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.25);margin-top:20px;letter-spacing:.06em}
 
-.rv{opacity:0;transform:translateY(44px);transition:opacity 1s cubic-bezier(.16,1,.3,1),transform 1s cubic-bezier(.16,1,.3,1)}
-.rv.vis{opacity:1;transform:translateY(0)}
-.rv3d{opacity:0;transform:translateY(50px) rotateX(8deg);transition:opacity .9s cubic-bezier(.16,1,.3,1),transform .9s cubic-bezier(.16,1,.3,1)}
-.rv3d.vis{opacity:1;transform:translateY(0) rotateX(0)}
+/* ═══ REVEAL ENGINE ═══ */
+/* container starts hidden until its words are prepared, to avoid flash */
+.rv{opacity:0;transition:opacity .35s ease}
+.rv.armed,.rv.vis{opacity:1}
+
+/* per-word typing: each word blurs in, order randomized via JS delay */
+.w-word{
+  display:inline-block;
+  opacity:0;
+  filter:blur(6px);
+  transform:translateY(6px);
+  transition:opacity .5s ease,filter .5s ease,transform .5s ease;
+  will-change:opacity,filter,transform;
+}
+.w-word.on{opacity:1;filter:blur(0);transform:none}
+.w-space{display:inline-block;white-space:pre}
+
+/* hologram rise: images, map, cards float up slowly, sharpening from blur */
+.holo-rise{
+  opacity:0;
+  filter:blur(14px) brightness(1.4);
+  transform:translateY(60px) scale(.965);
+  transition:opacity 1.4s cubic-bezier(.16,1,.3,1),filter 1.4s cubic-bezier(.16,1,.3,1),transform 1.4s cubic-bezier(.16,1,.3,1);
+  will-change:opacity,filter,transform;
+}
+.holo-rise.vis{opacity:1;filter:blur(0) brightness(1);transform:none}
+.hd1{transition-delay:.05s}.hd2{transition-delay:.22s}.hd3{transition-delay:.4s}
+
+/* legacy classes kept as aliases so untouched markup still animates */
+.rv3d{opacity:0;filter:blur(12px) brightness(1.3);transform:translateY(50px) scale(.97);transition:opacity 1.2s cubic-bezier(.16,1,.3,1),filter 1.2s cubic-bezier(.16,1,.3,1),transform 1.2s cubic-bezier(.16,1,.3,1);will-change:opacity,filter,transform}
+.rv3d.vis{opacity:1;filter:blur(0) brightness(1);transform:none}
 .dd1{transition-delay:.1s}.dd2{transition-delay:.22s}.dd3{transition-delay:.34s}
+@media(prefers-reduced-motion:reduce){
+  .w-word,.holo-rise,.rv3d{transition-duration:.3s!important;filter:none!important}
+}
 
 @media(max-width:900px){
   #plans-section{padding:80px 24px}.plans{grid-template-columns:1fr}
@@ -270,16 +300,16 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
 
 <section id="map-section">
   <div class="map-side">
-    <div class="gs-ey">Grid System</div>
-    <div class="gs-ti">그리드</div>
-    <div class="gs-de">
+    <div class="gs-ey rv">Grid System</div>
+    <div class="gs-ti rv dd1">그리드</div>
+    <div class="gs-de rv dd2">
       <p>소행성 충돌로 세계의 절반이 사라진 뒤,<br>인류에게 남은 것은 바다 위로 솟은 얼마 안 되는 땅뿐이었습니다.<br>Psionics는 그 위에 <b>'그리드'</b>라는 도시를 세웠습니다.<br>오늘날 인류 대부분이 이 안에서 살아갑니다.</p>
       <p>그리드는 중심에서 바깥으로 <b>A · B · C · D</b> 네 구역으로 나뉩니다.<br>중심에 가까울수록 안전하고 풍요롭습니다.</p>
       <p class="gs-hint">▸ 핀에 마우스를 올려 각 구역의 상태를 확인하세요.</p>
     </div>
   </div>
 
-  <div class="map-stage">
+  <div class="map-stage holo-rise">
     <div class="holo-map" id="holo-map">
       <div class="map-plate">
         <div class="map-scan"></div>
@@ -402,7 +432,7 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
 </section>
 
 <section id="pulse-section">
-  <div class="pulse-img-wrap rv">
+  <div class="pulse-img-wrap holo-rise">
     <img src="images/pulse.png" alt="Pulse Response Unit">
     <div class="pulse-img-tag">PSC-PMC // PULSE RESPONSE UNIT</div>
   </div>
@@ -412,9 +442,9 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
     <p class="rv dd1">검은 강화 유니폼에 새겨진 Psionics의 로고. 그리드에서 살아온 사람이라면 누구나 한 번쯤은 그 실루엣을 골목 끝에서 본 적이 있습니다. <strong>펄스(Pulse)</strong>는 유전자 편집과 최상급 사이버네틱스로 강화된 직속 대응 부대이며, 코어 지구의 경비부터 그리드-B 말단 구획의 순찰까지 전부 이들의 몫입니다.</p>
     <p class="rv dd2">그리드 바깥에는 <strong>글리처</strong>가 있습니다. 정체불명의 바이러스에 감염되어 자신이 사람이었다는 사실을 잊어버린 존재들입니다. 그들이 나타나면 가장 먼저 도착하는 것도, 마지막까지 남아 흔적을 지우는 것도 펄스입니다. 그들의 임무는 하나입니다. <strong>그리드가 어제와 똑같은 얼굴로 내일을 맞이하게 하는 것.</strong></p>
     <div class="pulse-stats">
-      <div class="ps-item rv dd1"><div class="ps-n">24/7</div><div class="ps-l">상시 대응 체계</div></div>
-      <div class="ps-item rv dd2"><div class="ps-n">98.2%</div><div class="ps-l">위협 제압 성공률</div></div>
-      <div class="ps-item rv dd3"><div class="ps-n">120s</div><div class="ps-l">평균 출동 시간 (A / B)</div></div>
+      <div class="ps-item holo-rise hd1"><div class="ps-n">24/7</div><div class="ps-l">상시 대응 체계</div></div>
+      <div class="ps-item holo-rise hd2"><div class="ps-n">98.2%</div><div class="ps-l">위협 제압 성공률</div></div>
+      <div class="ps-item holo-rise hd3"><div class="ps-n">120s</div><div class="ps-l">평균 출동 시간 (A / B)</div></div>
     </div>
   </div>
 </section>
@@ -509,7 +539,7 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
 </section>
 
 <section id="notice-section">
-  <div class="notice-box rv">
+  <div class="notice-box holo-rise">
     <div class="notice-tag">Official Statement · 안전 부서</div>
     <div class="notice-title">최근 유포되는 허위 정보에 대한 당사의 입장</div>
     <p>최근 미인가 방송과 비공식 네트워크를 통해, 당사의 방화벽 패치 프로그램이 나노 글리치 바이러스와 연관되어 있다는 <strong>근거 없는 루머</strong>가 유포되고 있습니다.</p>
@@ -523,8 +553,8 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
   <div class="outro-line rv"></div>
   <div class="outro-quote rv dd1">우리는 그리드이고,<br><em>그리드는 우리입니다.</em></div>
   <p class="outro-sub rv dd2">발 아래의 전력부터 머릿속의 감각까지,<br>Psionics Systems Corp.는 그리드 87년째 인류의 생존을 관리하고 있습니다.</p>
-  <a href="psionics_breach.html" class="outro-btn rv dd3">구독 관리</a>
-  <div class="outro-fine rv dd3">PSC-AUTH REQUIRED · 뉴럴 칩 인증 후 접속됩니다.</div>
+  <a href="psionics_breach.html" class="outro-btn holo-rise hd2">구독 관리</a>
+  <div class="outro-fine holo-rise hd3">PSC-AUTH REQUIRED · 뉴럴 칩 인증 후 접속됩니다.</div>
 </section>
 
 <footer>© GRID YEAR 87 · PSIONICS SYSTEMS CORP.</footer>
@@ -665,12 +695,81 @@ var t=0;
 })();
 </script>
 <script>
-var revealObs=new IntersectionObserver(function(entries){
-  entries.forEach(function(e){
-    if(e.isIntersecting){e.target.classList.add('vis');revealObs.unobserve(e.target)}
+/* ═══ REVEAL ENGINE ═══
+   Text (.rv, not .holo-rise): each word blurs in, in RANDOM order (computer-typing).
+   Visuals (.holo-rise, .rv3d): float up slowly like a hologram materializing. */
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+  /* Split a text element into word-spans, preserving inline tags (b, strong, em, span, br). */
+  function wrapWords(root){
+    if(root.dataset.wrapped) return;
+    root.dataset.wrapped='1';
+    (function walk(node){
+      var kids=Array.prototype.slice.call(node.childNodes);
+      kids.forEach(function(child){
+        if(child.nodeType===3){ /* text node */
+          var parts=child.textContent.split(/(\s+)/);
+          var frag=document.createDocumentFragment();
+          parts.forEach(function(p){
+            if(p==='') return;
+            if(/^\s+$/.test(p)){
+              var sp=document.createElement('span');
+              sp.className='w-space';sp.textContent=p;
+              frag.appendChild(sp);
+            }else{
+              var w=document.createElement('span');
+              w.className='w-word';w.textContent=p;
+              frag.appendChild(w);
+            }
+          });
+          node.replaceChild(frag,child);
+        }else if(child.nodeType===1 && child.tagName!=='BR'){
+          walk(child); /* recurse into b/strong/em/span so their words animate too */
+        }
+      });
+    })(root);
+  }
+
+  function shuffle(a){
+    for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
+    return a;
+  }
+
+  function typeIn(root){
+    var words=Array.prototype.slice.call(root.querySelectorAll('.w-word'));
+    if(reduce){ words.forEach(function(w){w.classList.add('on')}); return; }
+    var order=shuffle(words.slice());
+    var per=Math.min(46, Math.max(16, 520/Math.max(order.length,1))); /* faster when many words */
+    order.forEach(function(w,i){
+      setTimeout(function(){ w.classList.add('on'); }, i*per + Math.random()*40);
+    });
+  }
+
+  /* Prepare text elements up front (wrap + arm) so there's no flash of full text. */
+  var texts=[];
+  document.querySelectorAll('.rv').forEach(function(el){
+    if(el.classList.contains('holo-rise')) return; /* visual, handled separately */
+    wrapWords(el);
+    el.classList.add('armed'); /* container visible; words still hidden individually */
+    texts.push(el);
   });
-},{threshold:.1});
-document.querySelectorAll('.rv,.rv3d').forEach(function(el){revealObs.observe(el)});
+
+  var textObs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ textObs.unobserve(e.target); typeIn(e.target); }
+    });
+  },{threshold:0, rootMargin:'0px 0px -18% 0px'});
+  texts.forEach(function(el){ textObs.observe(el); });
+
+  /* Hologram risers */
+  var holoObs=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ holoObs.unobserve(e.target); e.target.classList.add('vis'); }
+    });
+  },{threshold:0, rootMargin:'0px 0px -12% 0px'});
+  document.querySelectorAll('.holo-rise,.rv3d').forEach(function(el){ holoObs.observe(el); });
+})();
 </script>
 </body>
 </html>
