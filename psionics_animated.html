@@ -52,15 +52,15 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:22px 48px;display:fl
 @keyframes sb{0%,100%{opacity:.06}50%{opacity:.3}}
 
 #map-section{position:relative;z-index:5;display:flex;flex-direction:column;align-items:center;padding:100px 48px 60px;overflow:hidden}
-.map-side{position:relative;z-index:10;max-width:760px;width:100%;margin-bottom:24px;text-align:center}
-.gs-ey{font-family:'DM Mono',monospace;font-size:11px;color:rgba(0,229,255,.55);letter-spacing:.25em;text-transform:uppercase;margin-bottom:14px}
-.gs-ti{font-family:'Orbitron',sans-serif;font-size:clamp(28px,3.5vw,42px);font-weight:700;color:#fff;letter-spacing:.03em;margin-bottom:24px}
-.gs-de{font-size:14px;color:rgba(255,255,255,.68);line-height:2.1;text-align:left}
-.gs-de p+p{margin-top:16px}
+.map-side{position:relative;z-index:10;max-width:760px;width:100%;margin-bottom:16px;text-align:center}
+.gs-ey{font-family:'DM Mono',monospace;font-size:11px;color:rgba(0,229,255,.55);letter-spacing:.25em;text-transform:uppercase;margin-bottom:10px}
+.gs-ti{font-family:'Orbitron',sans-serif;font-size:clamp(28px,3.5vw,42px);font-weight:700;color:#fff;letter-spacing:.03em;margin-bottom:16px}
+.gs-de{font-size:14px;color:rgba(255,255,255,.68);line-height:1.75;text-align:left}
+.gs-de p+p{margin-top:10px}
 .gs-de b{color:#fff;font-weight:600}
-.gs-hint{margin-top:20px;color:rgba(0,229,255,.6);font-size:12.5px;text-align:center}
+.gs-hint{margin-top:12px;color:rgba(0,229,255,.6);font-size:12.5px;text-align:center}
 
-.map-stage{perspective:1400px;width:min(880px,90vw);margin-top:60px}
+.map-stage{perspective:1400px;width:min(880px,90vw);margin-top:32px}
 .holo-map{position:relative;width:100%;aspect-ratio:1.5/1;transform:rotateX(48deg);transform-style:preserve-3d;transition:transform .4s ease-out}
 .map-plate{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 45%, rgba(0,229,255,.05) 0%, rgba(0,140,200,.02) 40%, transparent 75%),rgba(2,8,16,.55);border:1px solid rgba(0,229,255,.14);border-radius:8px;box-shadow:0 0 60px rgba(0,229,255,.06),inset 0 0 80px rgba(0,229,255,.03);overflow:hidden}
 .map-plate::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(0,229,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,.05) 1px,transparent 1px);background-size:44px 44px}
@@ -112,6 +112,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:22px 48px;display:fl
 .himg{width:calc(100% + 40px);margin:-18px -20px 14px;height:120px;overflow:hidden;position:relative}
 .himg img{width:100%;height:100%;object-fit:cover;filter:brightness(.75) saturate(.9)}
 .himg::after{content:'';position:absolute;inset:0;background:linear-gradient(180deg,transparent 50%,rgba(2,2,6,.85));pointer-events:none}
+.hud-backdrop{display:none}
 
 #cyber-section{position:relative;z-index:5;padding:120px 48px;max-width:1200px;margin:0 auto}
 .cyber-head{text-align:center;max-width:640px;margin:0 auto 64px}
@@ -263,7 +264,22 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
   nav{padding:16px 24px}.nav-links{display:none}
   #map-section{padding:60px 20px 30px}
   .map-stage{width:100%;margin-top:0}
-  .hud{width:250px}
+  /* ── 모바일: HUD를 화면 정중앙에 고정 (JS 인라인 좌표보다 우선하도록 !important) ── */
+  .hud{
+    width:min(320px,88vw);
+    left:50% !important;
+    top:50% !important;
+    transform:translate(-50%,-50%) scale(.94);
+    pointer-events:none;
+  }
+  .hud.show{transform:translate(-50%,-50%) scale(1);pointer-events:auto}
+  /* HUD 뒤 어두운 배경 (탭하면 닫힘) */
+  .hud-backdrop{
+    display:block;position:fixed;inset:0;z-index:190;
+    background:rgba(0,0,0,.55);backdrop-filter:blur(2px);
+    opacity:0;pointer-events:none;transition:opacity .25s;
+  }
+  .hud-backdrop.show{opacity:1;pointer-events:auto}
 }
 </style>
 </head>
@@ -349,6 +365,8 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
       </div>
     </div>
   </div>
+
+  <div class="hud-backdrop" id="hud-backdrop"></div>
 
   <div class="hud" id="ha"><div class="hf">
     <div class="himg"><img src="images/grid-A.png" alt="Grid-A"></div>
@@ -485,7 +503,7 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
     <h2 class="ph-ti rv dd1">당신의 삶을 선택하세요.</h2>
     <div class="ph-de rv dd2">
       <p>그리드에서는 <em>생존 자체가 구독 서비스</em>입니다. 머릿속의 뉴럴 칩이 통증을 줄여주고, 악취를 걸러주고, 바이러스를 막아줍니다. 그리고 이 모든 기능은 매달 결제가 확인될 때만 작동합니다.</p>
-      <p>구독 등급이 높을수록 더 쾌적한 세계를 감각하게 됩니다. 반대로 결제가 끊기면 감각 필터가 내려가고 통증 수용체가 원래대로 돌아옵니다. <b>그동안 걸러지고 있던 세계가, 한꺼번에 밀려들어옵니다.</b></p>
+      <p>구독 등급이 높을수록 더 쾌적한 세계를 감각하게 됩니다. 반대로 결제가 끊기면 감각 필터가 내려가고 통증 수용체가 원래대로 돌아갑니다. <b>그동안 걸러지고 있던 세계가, 한꺼번에 밀려들어옵니다.</b></p>
     </div>
   </div>
 
@@ -621,16 +639,38 @@ mapSection.addEventListener('mousemove',e=>{
 });
 mapSection.addEventListener('mouseleave',()=>{holoMap.style.transform='rotateX(48deg)'});
 
+/* ═══ HUD : 데스크톱=커서 추적 / 모바일=화면 중앙 고정 ═══ */
+const isMobileHud=()=>window.matchMedia('(max-width:900px)').matches;
+const hudBackdrop=document.getElementById('hud-backdrop');
+
+function closeAllHuds(){
+  document.querySelectorAll('.hud').forEach(h=>h.classList.remove('show'));
+  hudBackdrop.classList.remove('show');
+}
+
 document.querySelectorAll('.marker').forEach(m=>{
   const hud=document.getElementById(m.dataset.hud);
   m.addEventListener('mouseenter',e=>{
-    document.querySelectorAll('.hud').forEach(h=>h.classList.remove('show'));
+    closeAllHuds();
     hud.classList.add('show');
-    positionHud(hud,e.clientX,e.clientY);
+    if(isMobileHud()){
+      /* 모바일: 인라인 좌표 제거 → CSS가 중앙 배치, 배경 표시 */
+      hud.style.left='';hud.style.top='';
+      hudBackdrop.classList.add('show');
+    }else{
+      positionHud(hud,e.clientX,e.clientY);
+    }
   });
-  m.addEventListener('mousemove',e=>positionHud(hud,e.clientX,e.clientY));
-  m.addEventListener('mouseleave',()=>hud.classList.remove('show'));
+  m.addEventListener('mousemove',e=>{if(!isMobileHud())positionHud(hud,e.clientX,e.clientY)});
+  m.addEventListener('mouseleave',()=>{if(!isMobileHud())hud.classList.remove('show')});
 });
+
+/* 모바일: 배경 또는 HUD 자체를 탭하면 닫힘 */
+hudBackdrop.addEventListener('click',closeAllHuds);
+document.querySelectorAll('.hud').forEach(h=>{
+  h.addEventListener('click',()=>{if(isMobileHud())closeAllHuds()});
+});
+
 function positionHud(el,cx,cy){
   let px=cx+24,py=cy-100;
   if(px+310>window.innerWidth)px=cx-325;
