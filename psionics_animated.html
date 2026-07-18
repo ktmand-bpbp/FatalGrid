@@ -181,6 +181,7 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
 .ph-de p+p{margin-top:10px}
 .biz-head .ph-de,.plans-head .ph-de{line-height:1.7}
 .biz-head .ph-de p+p,.plans-head .ph-de p+p{margin-top:8px}
+.biz-head .ph-ti,.plans-head .ph-ti{margin-bottom:14px}
 .ph-de em{font-style:normal;color:var(--neon)}
 .ph-de b{color:#fff}
 
@@ -204,6 +205,19 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
 .plan-btn.solid{background:var(--neon);color:#020204;border-color:var(--neon)}
 .plan-note{font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.4);margin-top:12px;text-align:center;letter-spacing:.04em}
 .plan-note.warn{color:rgba(255,85,112,.65)}
+
+/* 방화벽 패치 = 유료 옵션 고지 배너 */
+.patch-notice{max-width:1200px;margin:36px auto 0;padding:0 48px}
+.patch-notice-inner{border:1px solid rgba(0,229,255,.18);background:rgba(4,10,16,.55);padding:20px 26px;position:relative;overflow:hidden;clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,16px 100%,0 calc(100% - 16px));display:flex;align-items:center;gap:20px}
+.patch-notice-inner::before{content:'';position:absolute;top:0;left:0;bottom:0;width:3px;background:linear-gradient(180deg,var(--neon),transparent)}
+.patch-badge{flex-shrink:0;font-family:'Orbitron',sans-serif;font-size:9px;font-weight:700;letter-spacing:.12em;color:#020204;background:var(--neon);padding:7px 14px;clip-path:polygon(0 0,calc(100% - 6px) 0,100% 6px,100% 100%,6px 100%,0 calc(100% - 6px));box-shadow:0 0 14px rgba(0,229,255,.3);text-transform:uppercase}
+.patch-text{font-size:13px;color:rgba(255,255,255,.72);line-height:1.7}
+.patch-text b{color:#fff;font-weight:600}
+.patch-text em{font-style:normal;color:var(--neon)}
+@media(max-width:900px){
+  .patch-notice{padding:0 24px}
+  .patch-notice-inner{flex-direction:column;align-items:flex-start;gap:12px;padding:18px 20px}
+}
 
 #notice-section{position:relative;z-index:5;padding:0 48px 40px;max-width:860px;margin:0 auto}
 .notice-box{border:1px solid rgba(0,229,255,.16);background:rgba(4,8,14,.7);padding:34px 38px;position:relative;overflow:hidden;clip-path:polygon(0 0,calc(100% - 20px) 0,100% 20px,100% 100%,20px 100%,0 calc(100% - 20px))}
@@ -551,6 +565,13 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
       </ul>
       <button class="plan-btn">프리미엄 선택</button>
       <div class="plan-note">상위 0.4%가 선택한 삶.</div>
+    </div>
+  </div>
+
+  <div class="patch-notice holo-rise">
+    <div class="patch-notice-inner">
+      <div class="patch-badge">Add-on</div>
+      <div class="patch-text"><b>방화벽 패치</b>는 <em>모든 플랜에 별도 부과되는 유료 옵션</em>입니다. 글리치 바이러스로부터 당신의 뉴럴 칩을 지키는 유일한 수단이며, 구독과 함께 결제될 때만 활성화됩니다. <b>결제가 끊기면 방어막도 함께 내려갑니다.</b></div>
     </div>
   </div>
 </section>
