@@ -55,7 +55,7 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:22px 48px;display:fl
 .map-side{position:relative;z-index:10;max-width:760px;width:100%;margin-bottom:16px;text-align:center}
 .gs-ey{font-family:'DM Mono',monospace;font-size:11px;color:rgba(0,229,255,.55);letter-spacing:.25em;text-transform:uppercase;margin-bottom:10px}
 .gs-ti{font-family:'Orbitron',sans-serif;font-size:clamp(28px,3.5vw,42px);font-weight:700;color:#fff;letter-spacing:.03em;margin-bottom:16px}
-.gs-de{font-size:14px;color:rgba(255,255,255,.68);line-height:1.75;text-align:left}
+.gs-de{font-size:14px;color:rgba(255,255,255,.68);line-height:1.75;text-align:center}
 .gs-de p+p{margin-top:10px}
 .gs-de b{color:#fff;font-weight:600}
 .gs-hint{margin-top:12px;color:rgba(0,229,255,.6);font-size:12.5px;text-align:center}
@@ -179,6 +179,8 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
 .ph-ti{font-family:'Orbitron',sans-serif;font-size:clamp(24px,4vw,44px);font-weight:700;color:#fff;letter-spacing:.04em;margin-bottom:22px}
 .ph-de{font-size:14px;color:rgba(255,255,255,.68);line-height:1.8;max-width:620px;margin:0 auto;text-align:left}
 .ph-de p+p{margin-top:10px}
+.biz-head .ph-de,.plans-head .ph-de{line-height:1.7}
+.biz-head .ph-de p+p,.plans-head .ph-de p+p{margin-top:8px}
 .ph-de em{font-style:normal;color:var(--neon)}
 .ph-de b{color:#fff}
 
@@ -315,7 +317,7 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
 </div>
 
 <section id="map-section">
-  <div class="map-side">
+  <div class="map-side" data-rv-group="gridmap">
     <div class="gs-ey rv">Grid System</div>
     <div class="gs-ti rv dd1">그리드</div>
     <div class="gs-de rv dd2">
@@ -418,7 +420,7 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
 </section>
 
 <section id="cyber-section">
-  <div class="cyber-head">
+  <div class="cyber-head" data-rv-group="cyber">
     <div class="ph-ey rv">Body &amp; Chip</div>
     <h2 class="rv dd1">몸도, Psionics가 만듭니다.</h2>
     <p class="rv dd2">그리드에서 살아가려면 머릿속에 칩 하나가 필요합니다. 그리고 대부분의 사람은, 언젠가 몸의 일부도 기계로 바꾸게 됩니다. <b>두 가지 모두 Psionics가 공급합니다.</b></p>
@@ -454,7 +456,7 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
     <img src="images/pulse.png" alt="Pulse Response Unit">
     <div class="pulse-img-tag">PSC-PMC // PULSE RESPONSE UNIT</div>
   </div>
-  <div class="pulse-info">
+  <div class="pulse-info" data-rv-group="pulse">
     <div class="pi-ey rv">Pulse Response Unit</div>
     <h2 class="pi-ti rv dd1">그리드의 질서는<br><em>펄스</em>가 지킵니다.</h2>
     <p class="rv dd1">검은 강화 유니폼에 새겨진 Psionics의 로고. 그리드에서 살아온 사람이라면 누구나 한 번쯤은 그 실루엣을 골목 끝에서 본 적이 있습니다. <strong>펄스(Pulse)</strong>는 유전자 편집과 최상급 사이버네틱스로 강화된 직속 대응 부대이며, 코어 지구의 경비부터 그리드-B 말단 구획의 순찰까지 전부 이들의 몫입니다.</p>
@@ -468,7 +470,7 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
 </section>
 
 <section id="biz-section">
-  <div class="biz-head">
+  <div class="biz-head" data-rv-group="biz">
     <div class="ph-ey rv">Our Business</div>
     <h2 class="ph-ti rv dd1" style="text-align:left">Psionics가 만드는 세계.</h2>
     <div class="ph-de rv dd2" style="margin:0;max-width:none">
@@ -498,7 +500,7 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
 </section>
 
 <section id="plans-section">
-  <div class="plans-head">
+  <div class="plans-head" data-rv-group="plans">
     <div class="ph-ey rv">Subscription Plans</div>
     <h2 class="ph-ti rv dd1">당신의 삶을 선택하세요.</h2>
     <div class="ph-de rv dd2">
@@ -795,9 +797,43 @@ var t=0;
     texts.push(el);
   });
 
+  /* ── Group support ──
+     Any element inside [data-rv-group] belongs to that group. When the group's
+     FIRST member scrolls into view, every member of the group is triggered at
+     once — but each element still runs its own per-word stagger, so words within
+     a block continue to rise one by one. Ungrouped .rv elements behave as before. */
+  var groups={}; /* name -> { members:[], fired:false } */
+  document.querySelectorAll('[data-rv-group]').forEach(function(container){
+    var name=container.getAttribute('data-rv-group');
+    var g=groups[name]||(groups[name]={members:[],fired:false});
+    /* collect both text (.rv) and visual (.holo-rise/.rv3d) members */
+    container.querySelectorAll('.rv,.holo-rise,.rv3d').forEach(function(el){ g.members.push(el); });
+  });
+
+  function groupOf(el){
+    var c=el.closest && el.closest('[data-rv-group]');
+    return c ? c.getAttribute('data-rv-group') : null;
+  }
+  function fireGroup(name){
+    var g=groups[name];
+    if(!g||g.fired) return;
+    g.fired=true;
+    g.members.forEach(function(el){
+      if(el.classList.contains('holo-rise')||el.classList.contains('rv3d')){
+        el.classList.add('vis');
+      }else{
+        typeIn(el); /* per-word stagger still runs */
+      }
+    });
+  }
+
   var textObs=new IntersectionObserver(function(entries){
     entries.forEach(function(e){
-      if(e.isIntersecting){ textObs.unobserve(e.target); typeIn(e.target); }
+      if(e.isIntersecting){
+        textObs.unobserve(e.target);
+        var gn=groupOf(e.target);
+        if(gn){ fireGroup(gn); } else { typeIn(e.target); }
+      }
     });
   },{threshold:0, rootMargin:'0px 0px -18% 0px'});
   texts.forEach(function(el){ textObs.observe(el); });
@@ -805,7 +841,11 @@ var t=0;
   /* Hologram risers */
   var holoObs=new IntersectionObserver(function(entries){
     entries.forEach(function(e){
-      if(e.isIntersecting){ holoObs.unobserve(e.target); e.target.classList.add('vis'); }
+      if(e.isIntersecting){
+        holoObs.unobserve(e.target);
+        var gn=groupOf(e.target);
+        if(gn){ fireGroup(gn); } else { e.target.classList.add('vis'); }
+      }
     });
   },{threshold:0, rootMargin:'0px 0px -12% 0px'});
   document.querySelectorAll('.holo-rise,.rv3d').forEach(function(el){ holoObs.observe(el); });
