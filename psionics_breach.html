@@ -258,7 +258,7 @@ body.glitching .page-content{animation:g-shift .14s steps(2)}
         <p>공식적으로는 존재하지 않는 네트워크입니다. 밀수업자와 부품 브로커, 글리처를 사냥해 코어를 파는 사람들이 여기서 만납니다. 의뢰는 암호 단말로 오고, 의뢰인은 익명이며, 보수는 코어 반납 시 자동 입금됩니다. 신뢰가 아니라 이해관계로 굴러가는 곳이라 <span class="r">정보가 틀려도 책임지는 사람은 없습니다.</span></p>
       </div>
       <div class="panel rv3d dd2">
-        <div class="row"><span class="rk">취급</span><span class="rval">이동 중개 · 부품 밀거래 · 글리처 파츠 · 의뢰 알선</span></div>
+        <div class="row"><span class="rk">취급</span><span class="rval">이동 중개, 부품 밀거래, 글리처 파츠 매입, 의뢰 알선</span></div>
         <div class="row"><span class="rk">조직 형태</span><span class="rval">독립 브로커 연결망. 의뢰인 익명</span></div>
         <div class="row"><span class="rk">정보 신뢰도</span><span class="rval a">보증 없음</span></div>
         <div class="row"><span class="rk">Psionics 입장</span><span class="rval">묵인 중. 글리처 감소에 기여하므로 단속 보류</span></div>
@@ -268,7 +268,7 @@ body.glitching .page-content{animation:g-shift .14s steps(2)}
     <section class="sec">
       <div class="sec-head rv"><div class="sec-num">06</div><h2 class="sec-title">순수육체주의자 : 위협 단체 평가</h2></div>
       <div class="alertbox rv dd1">
-        <div class="alertbox-label">THREAT LEVEL HIGH · Psionics 지정 반사회 단체</div>
+        <div class="alertbox-label">THREAT LEVEL HIGH. Psionics 지정 반사회 단체</div>
         <p>기계화된 인간을 <b>"이미 죽은 사람"</b>으로 취급하는 집단입니다.</p>
       </div>
       <div class="sec-intro rv dd2">
@@ -283,7 +283,7 @@ body.glitching .page-content{animation:g-shift .14s steps(2)}
     </section>
 
     <div id="revelation" class="rv">
-      <div class="rev-label">⬛ INTERNAL SUMMARY · GRID YEAR 104 ⬛</div>
+      <div class="rev-label">⬛ INTERNAL SUMMARY - GRID YEAR 104 ⬛</div>
       <div class="rev-main"><span id="rev-type"></span><span class="cur" id="rev-cur"></span></div>
       <div class="rev-body" id="rev-body" style="opacity:0">
         <p>여러분이 매달 결제하는 방화벽 패치는 실제로 감염을 막아줍니다. 문제는 그 너머에 있습니다. <span class="r">PSV-01의 최초 전파 경로는 그리드 연도 102년, Psionics가 의무 배포한 뉴럴 칩 펌웨어 업데이트였습니다.</span></p>
@@ -295,7 +295,7 @@ body.glitching .page-content{animation:g-shift .14s steps(2)}
     <div class="doc-footer rv">
       본 문서에 접근한 사실이 기록되었습니다. <span class="r">PSC-INTERNAL SECURITY PROTOCOL ACTIVE</span><br>
       인프라 보호법 제 11조 : 무단 열람 시 최대 징역 25년 또는 의무 재교육 프로그램 적용<br>
-      실시간 열람 로그 생성 중 · 세션 PSC-7734
+      실시간 열람 로그 생성 중. 세션 P927734
     </div>
 
   </main>
@@ -336,12 +336,12 @@ requestAnimationFrame(draw);
   const wall=document.getElementById('alert-wall');
   const AW=400,AH=150,GAP=14;
   const msgs=[
-    {t:'ACCESS DENIED',s:'CLEARANCE CHECK FAILED',b:'요구 등급 <span class="r">ULTRA-RED</span> · 현재 등급 CIVILIAN-BASIC'},
-    {t:'FIREWALL BYPASSED',s:'PROTECTION ACT §7',b:'<span class="r">인프라 보호법 제 7조 위반</span> · 위반 사실 등록됨'},
-    {t:'NEURAL TRACE',s:'CHIP ID LOGGED',b:'뉴럴 칩 식별자 기록됨 · <span class="r">CHIP_ID ████-7734</span>'},
-    {t:'PULSE DISPATCH',s:'UNIT NOTIFIED',b:'대응 부대 출동 요청 발신 · <span class="r">ETA 120s // DELTA-7</span>'},
-    {t:'SESSION RECORDING',s:'LIVE : PSC-CORE-SRV',b:'뉴럴 활동 실시간 전송 중 · <span class="r">종료해도 기록은 유지됩니다</span>'},
-    {t:'QUARANTINE FLAG',s:'PSV-EXPOSURE-RISK',b:'세션 격리 플래그 지정 · <span class="r">재검토 대상</span>'},
+    {t:'ACCESS DENIED',s:'CLEARANCE CHECK FAILED',b:'요구 등급 <span class="r">ULTRA-RED</span>, 현재 등급 CIVILIAN-BASIC'},
+    {t:'FIREWALL BYPASSED',s:'PROTECTION ACT §7',b:'<span class="r">인프라 보호법 제 7조 위반</span>. 위반 사실 등록됨'},
+    {t:'NEURAL TRACE',s:'CHIP ID LOGGED',b:'뉴럴 칩 식별자 기록됨. <span class="r">CHIP_ID ████-7734</span>'},
+    {t:'PULSE DISPATCH',s:'UNIT NOTIFIED',b:'대응 부대 출동 요청 발신. <span class="r">ETA 120s // DELTA-7</span>'},
+    {t:'SESSION RECORDING',s:'LIVE : PSC-CORE-SRV',b:'뉴럴 활동 실시간 전송 중... <span class="r">종료해도 기록은 유지됩니다</span>'},
+    {t:'QUARANTINE FLAG',s:'PSV-EXPOSURE-RISK',b:'세션 격리 플래그 지정. <span class="r">재검토 대상</span>'},
   ];
   function alertHTML(m){
     return '<div class="aw-titlebar"><div class="aw-warn-ico">⚠</div>'
@@ -431,7 +431,7 @@ function enterDoc(){
 
 const now=new Date();
 document.getElementById('ts').textContent=
-  'GY 104 · '+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+
+  'GY 104 '+String(now.getMonth()+1).padStart(2,'0')+'-'+String(now.getDate()).padStart(2,'0')+' '+
   String(now.getHours()).padStart(2,'0')+':'+String(now.getMinutes()).padStart(2,'0');
 
 function initReveals(){
