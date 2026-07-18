@@ -250,7 +250,7 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
 @keyframes epi-flicker{0%,92%,100%{opacity:1}93%{opacity:.55}94%{opacity:1}96%{opacity:.7}97%{opacity:1}}
 .epi-fine{margin-top:14px;font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);letter-spacing:.14em}
 
-/* ═══ HIJACK TRANSITION : 정상 로딩 → 세션 탈취 → breach ═══ */
+/* ═══ HIJACK TRANSITION : 정상 로딩 → 세션 탈취 → secret ═══ */
 #hijack-overlay{position:fixed;inset:0;z-index:2000;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center}
 #hijack-overlay.on{display:flex}
 .hj-track{width:180px;height:1px;background:rgba(255,255,255,.05);margin-bottom:13px;overflow:hidden}
@@ -334,7 +334,7 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
 
 <div id="loader"><div class="ld-track"><div class="ld-fill" id="lb"></div></div><div class="ld-txt" id="lt">INITIALIZING</div></div>
 
-<nav><div class="nav-logo"><div class="nav-psi">Ψ</div>PSIONICS</div><ul class="nav-links"><li><a href="#map-section">GRID MAP</a></li><li><a href="psionics_breach.html">INTERNAL</a></li></ul></nav>
+<nav><div class="nav-logo"><div class="nav-psi">Ψ</div>PSIONICS</div><ul class="nav-links"><li><a href="#map-section">GRID MAP</a></li><li><a href="secret.html">INTERNAL</a></li></ul></nav>
 
 <div id="logo-hero">
   <div class="logo-sticky">
@@ -733,10 +733,10 @@ function positionHud(el,cx,cy){
   el.style.left=px+'px';el.style.top=py+'px';
 }
 
-/* ═══ BREACH HIJACK TRANSITION ═══
+/* ═══ HIJACK TRANSITION ═══
    1) 정상 로딩 (animated 로더와 동일한 톤)
    2) 진행 정체 → 노이즈 버스트 → 세션 탈취 (붉은 글리치)
-   3) psionics_breach.html 로 이동 → 기존 경고창 월 등장 */
+   3) secret.html 로 이동 → 기존 경고창 월 등장 */
 (function(){
   const btn=document.getElementById('trace-btn');
   if(!btn)return;
@@ -818,9 +818,9 @@ function positionHud(el,cx,cy){
     sub.textContent='접근 권한이 없습니다.';
     await sleep(900);
 
-    /* PHASE 3 — breach 진입 (경고창 월은 breach가 담당) */
+    /* PHASE 3 — secret 진입 (경고창 월은 secret이 담당) */
     await burst(420);
-    location.href='psionics_breach.html';
+    location.href='secret.html';
   });
 })();
 </script>
