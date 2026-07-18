@@ -43,6 +43,10 @@ nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:22px 48px;display:fl
 .lw-eyebrow{font-size:clamp(16px,2vw,28px);font-weight:300;color:rgba(255,255,255,.92);letter-spacing:.01em;margin-bottom:4px}
 .lw-big{font-family:'Orbitron','Noto Sans KR',sans-serif;font-size:clamp(44px,8.5vw,132px);font-weight:800;letter-spacing:.05em;line-height:1.02;color:#f2f3f6;text-shadow:0 0 30px rgba(220,230,255,.12)}
 .lw-corp{position:absolute;left:6vw;bottom:8vh;font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.38);letter-spacing:.22em}
+/* PSIONICS 로고 하단 스크롤 안내 */
+.scroll-hint{display:inline-flex;align-items:center;gap:9px;margin-top:20px;font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.35);letter-spacing:.28em;text-transform:uppercase}
+.sh-arrow{font-style:normal;font-size:13px;line-height:1;color:rgba(0,229,255,.65);text-shadow:0 0 8px rgba(0,229,255,.3);animation:sh-bob 1.6s ease-in-out infinite}
+@keyframes sh-bob{0%,100%{transform:translateY(-2px)}50%{transform:translateY(3px)}}
 .lw-tag{position:absolute;right:6vw;top:9vh;font-family:'DM Mono',monospace;font-size:10px;color:rgba(255,255,255,.38);letter-spacing:.22em;text-align:right}
 @media(max-width:800px){.lw-top{left:6vw;top:20vh}.lw-bottom{right:6vw;bottom:20vh}}
 .scroll-cue{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);z-index:10;display:flex;flex-direction:column;align-items:center;gap:5px}
@@ -249,8 +253,9 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
 .epi-cta:hover{color:#ff6b81;border-color:rgba(255,74,99,.55);box-shadow:0 0 24px rgba(255,74,99,.15);background:rgba(255,74,99,.07)}
 @keyframes epi-flicker{0%,92%,100%{opacity:1}93%{opacity:.55}94%{opacity:1}96%{opacity:.7}97%{opacity:1}}
 .epi-fine{margin-top:14px;font-family:'DM Mono',monospace;font-size:9px;color:rgba(255,255,255,.18);letter-spacing:.14em}
+.epi-warn{margin-top:22px;font-size:11px;color:rgba(255,184,77,.55);letter-spacing:.04em}
 
-/* ═══ HIJACK TRANSITION : 정상 로딩 → 세션 탈취 → breach ═══ */
+/* ═══ HIJACK TRANSITION : 정상 로딩 → 세션 탈취 → secret ═══ */
 #hijack-overlay{position:fixed;inset:0;z-index:2000;background:#000;display:none;flex-direction:column;align-items:center;justify-content:center}
 #hijack-overlay.on{display:flex}
 .hj-track{width:180px;height:1px;background:rgba(255,255,255,.05);margin-bottom:13px;overflow:hidden}
@@ -334,7 +339,7 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
 
 <div id="loader"><div class="ld-track"><div class="ld-fill" id="lb"></div></div><div class="ld-txt" id="lt">INITIALIZING</div></div>
 
-<nav><div class="nav-logo"><div class="nav-psi">Ψ</div>PSIONICS</div><ul class="nav-links"><li><a href="#map-section">GRID MAP</a></li><li><a href="psionics_breach.html">INTERNAL</a></li></ul></nav>
+<nav><div class="nav-logo"><div class="nav-psi">Ψ</div>PSIONICS</div><ul class="nav-links"><li><a href="#map-section">GRID MAP</a></li><li><a href="secret.html">INTERNAL</a></li></ul></nav>
 
 <div id="logo-hero">
   <div class="logo-sticky">
@@ -345,8 +350,9 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
       <div class="hero-node"></div>
       <div class="lw-top">
         <div class="lw-big">PSIONICS.</div>
+        <div class="scroll-hint"><span>SCROLL DOWN</span><i class="sh-arrow">▾</i></div>
       </div>
-      <div class="lw-corp">GRID YEAR 104. WORLD INFRASTRUCTURE AUTHORITY</div>
+      <div class="lw-corp">GRID YEAR 104  WORLD INFRASTRUCTURE AUTHORITY</div>
     </div>
     <div class="scroll-cue"><span></span><span></span><span></span></div>
   </div>
@@ -506,7 +512,7 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
     <h2 class="ph-ti rv dd1" style="text-align:left">Psionics가 만드는 세계.</h2>
     <div class="ph-de rv dd2" style="margin:0;max-width:none">
       <p>발밑의 전력망부터 오늘 저녁의 한 끼까지.<br>
-        그리드에서 살아가는 데 필요한 모든 것을 Psionics가 설계·생산·공급합니다.<br>
+        그리드에서 살아가는 데 필요한 모든 것을 Psionics가 설계, 생산, 공급합니다.<br>
         <b>당신이 숨 쉬는 세계 전체가 저희의 일입니다.</b></p>
     </div>
   </div>
@@ -515,19 +521,19 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
       <div class="biz-icon">⚡</div>
       <h3>발전 &amp; 인프라</h3>
       <div class="biz-tag">Power &amp; Infrastructure</div>
-      <p>그리드-C의 대형 수력 발전 댐이 104년째 단 한 번의 중단 없이 전 구역에 전력과 물을 공급합니다. 도시를 움직이는 모든 기반 시설이 Psionics의 손에서 나옵니다.</p>
+      <p>그리드-C의 대형 수력 발전 댐이 104년째 단 한 번의 중단 없이 전 구역에 전력과 물을 공급합니다.</p>
     </div>
     <div class="biz-card rv3d dd2">
       <div class="biz-icon">🧬</div>
       <h3>식품 공급</h3>
       <div class="biz-tag">NutriSync™ Food Systems</div>
-      <p>농지가 사라진 세계에, 합성 식량 <strong>NutriSync™</strong>가 완전한 영양을 배급합니다. 뉴럴 칩과 연동되어 당신에게 필요한 만큼, 정확하게 공급됩니다.</p>
+      <p>농지가 사라진 세계에, 합성 식량으로 완전한 영양을 배급합니다. 뉴럴 칩과 연동되어 당신에게 필요한 만큼, 정확하게 공급됩니다.</p>
     </div>
     <div class="biz-card rv3d dd3">
       <div class="biz-icon">🦾</div>
       <h3>사이버네틱스 &amp; 의료</h3>
       <div class="biz-tag">BioFrame™ Medical Division</div>
-      <p>의수와 의족부터 인공 장기까지, <strong>BioFrame™</strong>가 당신의 신체를 보강합니다. 시술부터 사후 관리, 실시간 생체 모니터링까지 전 과정을 책임집니다.</p>
+      <p>의수, 의족, 인공 장기. 당신의 신체를 보강합니다. 시술부터 사후 관리, 실시간 생체 모니터링까지 전 과정을 책임집니다.</p>
     </div>
   </div>
 </section>
@@ -579,7 +585,7 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
       <ul class="plan-features">
         <li>고통 임계값 완전 제거 (100%)</li>
         <li>무제한 감각 콘텐츠</li>
-        <li>긴급 대응 최우선 처리</li><br>
+        <li>긴급 대응 최우선 처리</li>
       </ul>
       <button class="plan-btn">프리미엄 선택</button>
       <div class="plan-note">상위 0.4%가 선택한 삶.</div>
@@ -596,14 +602,21 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
 
 <section id="notice-section">
   <div class="notice-box holo-rise">
-    <div class="notice-tag">Official Statement  안전 부서</div>
+    <div class="notice-tag">Official Statement 안전 부서</div>
     <div class="notice-title">최근 유포되는 허위 정보에 대한 당사의 입장</div>
     <p>최근 미인가 방송과 비공식 네트워크를 통해, 당사의 방화벽 패치 프로그램이 나노 글리치 바이러스와 연관되어 있다는 <strong>근거 없는 루머</strong>가 유포되고 있습니다.</p>
-    <p><span class="notice-deny">Psionics Systems Corp.는 당사의 패치 시스템이 글리치 바이러스의 발생 또는 확산에 기여한다는 어떠한 주장도 단호히 부인합니다.</span> 해당 주장은 현재 펄스 대응 부대가 유포 경로를 수사 중입니다.</p>
-    <p>방화벽 패치는 그리드 시민의 안전을 지키는 <strong>유일하게 검증된 보호 수단</strong>입니다.<br>
-      검증되지 않은 정보에 현혹되지 마시고, 구독을 항상 최신 상태로 유지하시기 바랍니다.</p>
-    <div class="notice-sig">PSC 보안 공고 #224-B 안전 부서 발행, 그리드 104년</div>
+    <p><span class="notice-deny">Psionics Systems Corp.는 당사의 패치 시스템이 글리치 바이러스의 발생 또는 확산에 기여한다는 어떠한 주장도 단호히 부인합니다.</span> 해당 주장은 그리드-C와 D에서 활동하는 것으로 확인된 반사회 단체와 연관된 것으로 추적되고 있으며, 현재 펄스 대응 부대가 유포 경로를 수사 중입니다.</p>
+    <p>방화벽 패치는 그리드 시민의 안전을 지키는 <strong>유일하게 검증된 보호 수단</strong>입니다. 검증되지 않은 정보에 현혹되지 마시고, 구독을 항상 최신 상태로 유지하시기 바랍니다.</p>
+    <div class="notice-sig">PSC 보안 공고 #224-B 안전 부서 발행. 그리드 104년</div>
   </div>
+</section>
+
+<section id="outro-section">
+  <div class="outro-line rv"></div>
+  <div class="outro-quote rv dd1">우리는 그리드이고,<br><em>그리드는 우리입니다.</em></div>
+  <p class="outro-sub rv dd2">발 아래의 전력부터 머릿속의 감각까지,<br>Psionics Systems Corp.는 그리드 104년째 인류의 생존을 관리하고 있습니다.</p>
+  <a href="secret.html" class="outro-btn holo-rise hd2">구독 관리</a>
+  <div class="outro-fine holo-rise hd3">PSC-AUTH REQUIRED. 뉴럴 칩 인증 후 접속됩니다.</div>
 </section>
 
 <section id="epilogue-section">
@@ -612,8 +625,8 @@ footer{padding:32px 48px;border-top:1px solid rgba(255,255,255,.04);text-align:c
     <p class="epi-text rv dd1">비에 젖은 네온 거리, 어제와 똑같이 굴러가는 밤.<br>그 평범한 밤, 누군가의 머릿속에서<br>무언가 <b>아주 작게 깜빡였습니다.</b></p>
     <p class="epi-text epi-last rv dd2">그것이 모든 일의 시작이었죠.</p>
     <div class="epi-cta rv dd3" id="trace-btn">▸ 신호 추적하기</div>
-    <div class="epi-fine rv dd3">UNVERIFIED SIGNAL... ORIGIN: GRID-B</div>
-    <b>갑작스러운 화면 전환과 깜빡임 묘사가 포함되어 있습니다. 접속에 주의하세요.</b>
+    <div class="epi-fine rv dd3">UNVERIFIED SIGNAL. ORIGIN: GRID-B</div>
+    <div class="epi-warn rv dd3">⚠ 갑작스러운 화면 전환과 깜빡임 묘사가 포함되어 있습니다. 접속에 주의하세요.</div>
   </div>
 </section>
 
@@ -728,10 +741,10 @@ function positionHud(el,cx,cy){
   el.style.left=px+'px';el.style.top=py+'px';
 }
 
-/* ═══ BREACH HIJACK TRANSITION ═══
+/* ═══ secret HIJACK TRANSITION ═══
    1) 정상 로딩 (animated 로더와 동일한 톤)
    2) 진행 정체 → 노이즈 버스트 → 세션 탈취 (붉은 글리치)
-   3) psionics_breach.html 로 이동 → 기존 경고창 월 등장 */
+   3) secret.html 로 이동 → 기존 경고창 월 등장 */
 (function(){
   const btn=document.getElementById('trace-btn');
   if(!btn)return;
@@ -813,9 +826,9 @@ function positionHud(el,cx,cy){
     sub.textContent='당신이 볼 문서가 아닙니다.';
     await sleep(900);
 
-    /* PHASE 3 — breach 진입 (경고창 월은 breach가 담당) */
+    /* PHASE 3 — secret 진입 (경고창 월은 secret가 담당) */
     await burst(420);
-    location.href='psionics_breach.html';
+    location.href='secret.html';
   });
 })();
 </script>
