@@ -27,7 +27,7 @@
 <div style="padding:20px 16px 0">
 <div style="display:flex;flex-wrap:wrap;gap:2px 12px;padding:11px 0;border-bottom:1px dashed rgba(240,240,236,.18)">
 <span style="flex:0 0 76px;font-family:'Consolas','Courier New',monospace;font-size:9.5px;letter-spacing:.16em;color:rgba(240,240,236,.44);padding-top:4px">수취인</span>
-<span style="flex:1 1 140px;min-width:0;font-size:13.5px;color:#f0f0ec">{{user}}</span>
+<span style="flex:1 1 140px;min-width:0;font-size:13.5px;color:#f0f0ec">(당신의 이름)</span>
 </div>
 <div style="display:flex;flex-wrap:wrap;gap:2px 12px;padding:11px 0;border-bottom:1px dashed rgba(240,240,236,.18)">
 <span style="flex:0 0 76px;font-family:'Consolas','Courier New',monospace;font-size:9.5px;letter-spacing:.16em;color:rgba(240,240,236,.44);padding-top:4px">발신처</span>
@@ -68,7 +68,7 @@
 <!-- 상황 설명 -->
 <div style="padding:clamp(28px,6.6vw,40px) 18px 0">
 <div style="font-size:14px;color:rgba(240,240,236,.86);line-height:2.15">
-택배가 하나 왔습니다.<br>발신처는 비어 있고, 운송장 번호 자리엔 깨진 문자열뿐.<br>그래도 수령처는 분명 {{user}}의 집이었습니다.<br><br>
+택배가 하나 왔습니다.<br>발신처는 비어 있고, 운송장 번호 자리엔 깨진 문자열뿐.<br>그래도 수령처는 분명 당신의 집이었습니다.<br><br>
 안에 든 것은 총기 정비 키트, 탄창 몇 개, 그리고 라벨 없는 약병...?<br>이런 걸 주문한 기억은 없는데요 (아마도)<br>심지어 약병에는 처방 코드도 유통 마크도 없습니다. 이거 불법 아닌가요?<br><br>
 <span style="color:rgba(240,240,236,.56)">그리고 얼마 뒤, 누가 문을 부술 듯이 두드렸습니다.</span>
 </div>
